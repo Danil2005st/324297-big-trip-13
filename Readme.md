@@ -1,7 +1,7 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Данила Прокопенко](https://up.htmlacademy.ru/ecmascript/13/user/324297).
-* Наставник: `Неизвестно`.
+* Наставник: [Александр Тимоновский](https://up.htmlacademy.ru/ecmascript/13/user/768125).
 
 ---
 
