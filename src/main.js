@@ -6,6 +6,9 @@ import {createSortTemplate} from "./view/sort.js";
 import {createEvent} from "./view/event.js";
 import {createEventEdit} from "./view/event-edit.js";
 import {createEventAdd} from "./view/event-add.js";
+import {generatePoint} from "./mock/waypoint.js";
+
+const waypoints = new Array(20).fill().map(generatePoint);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -31,4 +34,7 @@ render(siteContentEvents, `<ul class="trip-events__list"></ul>`, `beforeend`);
 const siteContentEventsList = siteMainElement.querySelector(`.trip-events__list`);
 render(siteContentEventsList, createEventEdit(), `beforeend`);
 render(siteContentEventsList, createEventAdd(), `beforeend`);
-render(siteContentEventsList, createEvent(), `beforeend`);
+
+for (const point of  waypoints) {
+  render(siteContentEventsList, createEvent(point), `beforeend`);
+};
