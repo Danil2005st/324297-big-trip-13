@@ -7,10 +7,12 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export const humanizePointStart = (dueDate) => {
-  return dayjs(dueDate).format(`MMM DD`);
+/*
+export const humanizePointStart = (time) => {
+  return dayjs(time).format(`MMM DD`);
 };
 
-export const humanizePointPeriod = (dueDate) => {
-  return dayjs(dueDate).format(`HH:mm`);
+export const humanizePointTime = (time) => {
+  return dayjs(time).format(`HH:mm`);
 };
+*/

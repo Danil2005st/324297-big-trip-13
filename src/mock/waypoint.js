@@ -33,9 +33,10 @@ const getOffers = (type) => {
     return {
       name,
       price,
+      isActive:Boolean(getRandomInteger(0, 1)),
     };
   });
-  return offerList.slice(0, getRandomInteger(0, 5));
+  return offerList;
 };
 
 const getDestinations = () => {
@@ -59,15 +60,15 @@ const generateDestinations = () => {
 };
 
 const generateTime = () => {
-  const daysGap = getRandomInteger(0, 7);
+  const daysGap = getRandomInteger(-7, 7);
   const hoursGap = getRandomInteger(1, 24);
   const beginTime = dayjs().add(daysGap, `day`);
-  const endTime = beginTime.add(hoursGap, `hour`);
+  const endTime = beginTime.add(hoursGap, `hour`).add(hoursGap, `minute`);
 
   const times = {
     begin: beginTime,
     end: endTime,
-    difference: beginTime - endTime,
+    difference: endTime.diff(beginTime , 'millisecond'),
   };
 
   return times;
@@ -75,7 +76,6 @@ const generateTime = () => {
 
 
 export const generatePoint = () => {
-
 
   return {
     type: generateTypePoint(),

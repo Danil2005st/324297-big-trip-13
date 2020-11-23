@@ -1,40 +1,38 @@
-import {POINT_TYPES, CITIES, DESTINATIONS, PHOTO_URL} from "../const.js";
-import {humanizePointStart, humanizePointPeriod} from "../utils.js";
 import dayjs from "dayjs";
 
-
 const createOffers = (offers) => {
-
-  return offers.map(({name, price}) => `<li class="event__offer">
-          <span class="event__offer-title">${name}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </li>`).join(``);
+  return offers.map(({name, price, isActive}) => {
+    return isActive
+      ? `<li class="event__offer">
+      <span class="event__offer-title">${name}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${price}</span>
+    </li>`
+      : ``;
+  }).join(``);
 };
 
 export const createEvent = (point) => {
-  const {type, city, offers, destinations, time, price, isFavorite} = point;
+  const {type, city, offers, time, price, isFavorite} = point;
 
   const favoriteClassName = isFavorite
     ? `event__favorite-btn event__favorite-btn--active`
     : `event__favorite-btn`;
 
-
-
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dayjs(time.begin).format('YYYY-MM-DD')}">${humanizePointStart(time.begin)}</time>
+      <time class="event__date" datetime="${dayjs(time.begin).format('YYYY-MM-DD')}">${dayjs(time.begin).format('MMM DD')}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${city}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${time.begin}">${humanizePointPeriod(time.begin)}</time>
+          <time class="event__start-time" datetime="${dayjs(time.begin).format('YYYY-MM-DD HH:mm')}">${dayjs(time.begin).format('HH:mm')}</time>
           &mdash;
-          <time class="event__end-time" datetime="${time.end}">${humanizePointPeriod(time.end)}</time>
+          <time class="event__end-time" datetime="${dayjs(time.end).format('YYYY-MM-DD HH:mm')}">${dayjs(time.end).format('HH:mm')}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${dayjs(time.difference).format('DD HH mm')}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
