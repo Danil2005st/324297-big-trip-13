@@ -32,9 +32,10 @@ render(siteContentEvents, createSortTemplate(), `beforeend`);
 render(siteContentEvents, `<ul class="trip-events__list"></ul>`, `beforeend`);
 
 const siteContentEventsList = siteMainElement.querySelector(`.trip-events__list`);
-render(siteContentEventsList, createEventEdit(), `beforeend`);
-render(siteContentEventsList, createEventAdd(), `beforeend`);
 
-for (const point of  waypoints) {
+render(siteContentEventsList, createEventEdit(waypoints[0]), `beforeend`);
+render(siteContentEventsList, createEventAdd(waypoints[1]), `beforeend`);
+
+for (const point of waypoints) {
   render(siteContentEventsList, createEvent(point), `beforeend`);
-};
+}

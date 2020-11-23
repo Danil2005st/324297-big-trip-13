@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {POINT_TYPES, CITIES, DESTINATIONS, PHOTO_URL} from "../const.js";
+import {POINT_TYPES, CITIES, DESTINATIONS} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 
 const generatePrice = () => getRandomInteger(0, 1000);
@@ -28,32 +28,39 @@ for (const type of POINT_TYPES) {
   });
 }
 
-const getOffers = (type) => {
-  const offerList = Object.entries(offers.get(type)).map(([name, price]) => {
-    return {
-      name,
-      price,
-      isActive:Boolean(getRandomInteger(0, 1)),
-    };
-  });
-  return offerList;
-};
+const getOffers = (type) => Object.entries(offers.get(type)).map(([name, price]) => {
+  return {
+    name,
+    price,
+    isActive: Boolean(getRandomInteger(0, 1)),
+  };
+});
 
 const getDestinations = () => {
-  const decription = DESTINATIONS.split(`. `);
+  const description = DESTINATIONS.split(`. `);
   const randomInteger = getRandomInteger(1, 5);
 
   const str = [];
   for (let i = randomInteger; i--;) {
-    str.push(decription[getRandomInteger(1, decription.length - 1)]);
+    str.push(description[getRandomInteger(1, description.length - 1)]);
   }
   return str.join(`. `);
 };
 
+const getPhotos = () => {
+  const randomInteger = getRandomInteger(1, 10);
+
+  const photos = [];
+  for (let i = randomInteger; i--;) {
+    photos.push(`http://picsum.photos/248/152?r=${Math.random()}`);
+  }
+  return photos;
+};
+
 const generateDestinations = () => {
   const destinations = {
-    decription: getDestinations(),
-    photo: PHOTO_URL,
+    description: getDestinations(),
+    photo: getPhotos(),
   };
 
   return destinations;
@@ -68,7 +75,7 @@ const generateTime = () => {
   const times = {
     begin: beginTime,
     end: endTime,
-    difference: endTime.diff(beginTime , 'millisecond'),
+    difference: endTime.diff(beginTime),
   };
 
   return times;
@@ -76,7 +83,6 @@ const generateTime = () => {
 
 
 export const generatePoint = () => {
-
   return {
     type: generateTypePoint(),
     city: getRandomCity(),
