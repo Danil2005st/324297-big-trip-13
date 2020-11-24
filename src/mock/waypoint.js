@@ -68,15 +68,17 @@ const generateDestinations = () => {
 
 const generateTime = () => {
   const daysGap = getRandomInteger(-7, 7);
-  const hoursGap = getRandomInteger(1, 24);
+  const hoursGap = getRandomInteger(1, 48);
   const beginTime = dayjs().add(daysGap, `day`);
   const endTime = beginTime.add(hoursGap, `hour`).add(hoursGap, `minute`);
 
   const times = {
     begin: beginTime,
     end: endTime,
-    difference: endTime.diff(beginTime),
+    difference: endTime.diff(beginTime, 'day'),
   };
+
+  console.log(times.difference);
 
   return times;
 };
