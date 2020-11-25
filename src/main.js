@@ -9,7 +9,7 @@ import {createEventAdd} from "./view/event-add.js";
 import {createEmptyEventList} from "./view/list-empty.js";
 import {generatePoint} from "./mock/waypoint.js";
 
-const waypoints = new Array(5).fill().map(generatePoint);
+const waypoints = new Array(60).fill().map(generatePoint);
 
 waypoints.sort(function (a, b) {
   return a.time.begin.valueOf() - b.time.begin.valueOf();
@@ -51,4 +51,4 @@ if (waypoints.length > 0) {
   }
 } else {
   render(siteContentEvents, createEmptyEventList(), `beforeend`);
-};
+}

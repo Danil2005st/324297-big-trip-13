@@ -21,18 +21,18 @@ export const createEvent = (point) => {
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dayjs(time.begin).format('YYYY-MM-DD')}">${dayjs(time.begin).format('MMM DD')}</time>
+      <time class="event__date" datetime="${dayjs(time.begin).format(`YYYY-MM-DD`)}">${dayjs(time.begin).format(`MMM DD`)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${city}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dayjs(time.begin).format('YYYY-MM-DD HH:mm')}">${dayjs(time.begin).format('HH:mm')}</time>
+          <time class="event__start-time" datetime="${dayjs(time.begin).format(`YYYY-MM-DD HH:mm`)}">${dayjs(time.begin).format(`HH:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${dayjs(time.end).format('YYYY-MM-DD HH:mm')}">${dayjs(time.end).format('HH:mm')}</time>
+          <time class="event__end-time" datetime="${dayjs(time.end).format(`YYYY-MM-DD HH:mm`)}">${dayjs(time.end).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${dayjs(time.difference).format('DD HH mm')}</p>
+        <p class="event__duration">${time.difference}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
@@ -53,5 +53,5 @@ export const createEvent = (point) => {
         <span class="visually-hidden">Open event</span>
       </button>
     </div>
-  </li>`
+  </li>`;
 };

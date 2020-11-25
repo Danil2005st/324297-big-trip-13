@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import {POINT_TYPES, CITIES, DESTINATIONS} from "../const.js";
+import {CITIES, DESTINATIONS, POINT_TYPES} from "../const.js";
 import {getRandomInteger} from "../utils.js";
 
 const generatePrice = () => getRandomInteger(0, 1000);
@@ -58,22 +58,24 @@ const getPhotos = () => {
 };
 
 const generateDestinations = () => {
-  const destinations = {
+  return {
     description: getDestinations(),
     photo: getPhotos(),
   };
-
-  return destinations;
 };
 
 const calculateDifferenceTime = (begin, end) => {
-  //endTime.diff(beginTime, 'minute')
-  let date = 0;
+  const days = end.diff(begin, `day`);
+  const hours = end.diff(begin, `hour`) % 24;
+  const minutes = end.diff(begin, `minute`) % 60;
+  let date;
 
-  if(end.diff(begin, 'day') > 0) {
-    date = end.diff(begin, 'day');
+  if (days > 0) {
+    date = `${days}D ${hours}H ${minutes}M`;
+  } else if (hours > 0) {
+    date = `${hours}H ${minutes}M`;
   } else {
-
+    date = `${minutes}M`;
   }
 
   return date;
@@ -81,19 +83,16 @@ const calculateDifferenceTime = (begin, end) => {
 
 const generateTime = () => {
   const daysGap = getRandomInteger(-7, 7);
-  const hoursGap = getRandomInteger(1, 48);
+  const hoursGap = getRandomInteger(0, 48);
+  const minutesGap = getRandomInteger(0, 60);
   const beginTime = dayjs().add(daysGap, `day`);
-  const endTime = beginTime.add(hoursGap, `hour`).add(hoursGap, `minute`);
+  const endTime = beginTime.add(hoursGap, `hour`).add(minutesGap, `minute`);
 
-  const times = {
+  return {
     begin: beginTime,
     end: endTime,
     difference: calculateDifferenceTime(beginTime, endTime),
   };
-
-  console.log(times.difference);
-
-  return times;
 };
 
 
