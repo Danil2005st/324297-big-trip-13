@@ -6,12 +6,13 @@ import {createSortTemplate} from "./view/sort.js";
 import {createEvent} from "./view/event.js";
 import {createEventEdit} from "./view/event-edit.js";
 import {createEventAdd} from "./view/event-add.js";
+import {createEmptyEventList} from "./view/list-empty.js";
 import {generatePoint} from "./mock/waypoint.js";
 
 const waypoints = new Array(5).fill().map(generatePoint);
 
-waypoints.sort(function(a, b) {
-  return a.time.begin.valueOf()-b.time.begin.valueOf();
+waypoints.sort(function (a, b) {
+  return a.time.begin.valueOf() - b.time.begin.valueOf();
 });
 
 const render = (container, template, place) => {
@@ -26,20 +27,28 @@ const siteContentEvents = siteMainElement.querySelector(`.trip-events`);
 
 render(siteHeaderElement, createSiteMenuTemplate(), `afterend`);
 render(siteHeaderElementFilters, createFilterTemplate(), `beforeend`);
-render(siteHeaderTripWrap, `<section class="trip-main__trip-info  trip-info"></section>`, `afterbegin`);
 
-const siteHeaderTrip = siteMainElement.querySelector(`.trip-main__trip-info`);
+if (waypoints.length > 0) {
 
-render(siteHeaderTrip, createTripCost(waypoints), `afterbegin`);
-render(siteHeaderTrip, createTripInfo(), `afterbegin`);
-render(siteContentEvents, createSortTemplate(), `beforeend`);
-render(siteContentEvents, `<ul class="trip-events__list"></ul>`, `beforeend`);
+  render(siteHeaderTripWrap, `<section class="trip-main__trip-info  trip-info"></section>`, `afterbegin`);
 
-const siteContentEventsList = siteMainElement.querySelector(`.trip-events__list`);
+  const siteHeaderTrip = siteMainElement.querySelector(`.trip-main__trip-info`);
 
-render(siteContentEventsList, createEventEdit(waypoints[0]), `beforeend`);
-render(siteContentEventsList, createEventAdd(waypoints[1]), `beforeend`);
+  render(siteHeaderTrip, createTripCost(waypoints), `afterbegin`);
+  render(siteHeaderTrip, createTripInfo(waypoints), `afterbegin`);
 
-for (const point of waypoints) {
-  render(siteContentEventsList, createEvent(point), `beforeend`);
-}
+  render(siteContentEvents, createSortTemplate(), `beforeend`);
+
+  render(siteContentEvents, `<ul class="trip-events__list"></ul>`, `beforeend`);
+
+  const siteContentEventsList = siteMainElement.querySelector(`.trip-events__list`);
+
+  render(siteContentEventsList, createEventEdit(waypoints[0]), `beforeend`);
+  render(siteContentEventsList, createEventAdd(waypoints[1]), `beforeend`);
+
+  for (const point of waypoints) {
+    render(siteContentEventsList, createEvent(point), `beforeend`);
+  }
+} else {
+  render(siteContentEvents, createEmptyEventList(), `beforeend`);
+};

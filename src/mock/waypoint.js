@@ -66,6 +66,19 @@ const generateDestinations = () => {
   return destinations;
 };
 
+const calculateDifferenceTime = (begin, end) => {
+  //endTime.diff(beginTime, 'minute')
+  let date = 0;
+
+  if(end.diff(begin, 'day') > 0) {
+    date = end.diff(begin, 'day');
+  } else {
+
+  }
+
+  return date;
+};
+
 const generateTime = () => {
   const daysGap = getRandomInteger(-7, 7);
   const hoursGap = getRandomInteger(1, 48);
@@ -75,7 +88,7 @@ const generateTime = () => {
   const times = {
     begin: beginTime,
     end: endTime,
-    difference: endTime.diff(beginTime, 'day'),
+    difference: calculateDifferenceTime(beginTime, endTime),
   };
 
   console.log(times.difference);
