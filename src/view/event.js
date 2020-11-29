@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import {createElement} from "../utils.js";
 
 const createOffers = (offers) => {
   return offers.map(({name, price, isActive}) => {
@@ -12,7 +13,7 @@ const createOffers = (offers) => {
   }).join(``);
 };
 
-export const createEvent = (point) => {
+const createEvent = (point) => {
   const {type, city, offers, time, price, isFavorite} = point;
 
   const favoriteClassName = isFavorite
@@ -55,3 +56,26 @@ export const createEvent = (point) => {
     </div>
   </li>`;
 };
+
+export default class Event {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEvent(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

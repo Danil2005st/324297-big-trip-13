@@ -1,6 +1,7 @@
+import {createElement} from "../utils.js";
 import dayjs from "dayjs";
 
-export const createTripInfo = (waypoints) => {
+const createTripInfo = (waypoints) => {
   let title;
   let period;
 
@@ -31,3 +32,27 @@ export const createTripInfo = (waypoints) => {
     <p class="trip-info__dates">${period}</p>
   </div>`;
 };
+
+export default class TripInfo {
+  constructor(waypoints) {
+    this._waypoints = (waypoints);
+
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfo(this._waypoints);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

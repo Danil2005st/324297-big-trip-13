@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import {POINT_TYPES, CITIES} from "../const.js";
+import {createElement} from "../utils.js";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -30,7 +31,7 @@ const createOffers = (offers) => {
   }).join(``);
 };
 
-export const createEventAdd = (point) => {
+const createEventAdd = (point) => {
   const {type, city, offers, destinations, time} = point;
 
   return `<li class="trip-events__item">
@@ -103,3 +104,26 @@ export const createEventAdd = (point) => {
     </form>
   </li>`;
 };
+
+export default class EventAdd {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventAdd(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

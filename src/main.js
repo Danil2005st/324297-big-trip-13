@@ -1,54 +1,78 @@
-import {createSiteMenuTemplate} from "./view/site-menu.js";
-import {createFilterTemplate} from "./view/filter.js";
-import {createTripInfo} from "./view/trip-info.js";
-import {createTripCost} from "./view/trip-cost.js";
-import {createSortTemplate} from "./view/sort.js";
-import {createEvent} from "./view/event.js";
-import {createEventEdit} from "./view/event-edit.js";
-import {createEventAdd} from "./view/event-add.js";
-import {createEmptyEventList} from "./view/list-empty.js";
+import SiteMenuTemplate from "./view/site-menu.js";
+import FilterTemplate from "./view/filter.js";
+import TripInfo from "./view/trip-info.js";
+import TripCost from "./view/trip-cost.js";
+import SortTemplate from "./view/sort.js";
+import EventList from "./view/event-list.js";
+import Event from "./view/event.js";
+import EventEdit from "./view/event-edit.js";
+import EmptyEventList from "./view/list-empty.js";
 import {generatePoint} from "./mock/waypoint.js";
+import {render, RenderPosition} from "./utils.js";
 
-const waypoints = new Array(60).fill().map(generatePoint);
+const waypoints = new Array(20).fill().map(generatePoint);
 
 waypoints.sort(function (a, b) {
   return a.time.begin.valueOf() - b.time.begin.valueOf();
 });
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 const siteMainElement = document.querySelector(`.page-body`);
-const siteHeaderElement = siteMainElement.querySelector(`.trip-main__trip-controls h2:first-child`);
-const siteHeaderElementFilters = siteMainElement.querySelector(`.trip-main__trip-controls`);
-const siteHeaderTripWrap = siteMainElement.querySelector(`.trip-main`);
+const siteHeaderElement = siteMainElement.querySelector(`.trip-main__trip-controls`);
 const siteContentEvents = siteMainElement.querySelector(`.trip-events`);
 
-render(siteHeaderElement, createSiteMenuTemplate(), `afterend`);
-render(siteHeaderElementFilters, createFilterTemplate(), `beforeend`);
+render(siteHeaderElement, new SiteMenuTemplate().getElement(), RenderPosition.AFTERBEGIN);
+render(siteHeaderElement, new FilterTemplate().getElement(), RenderPosition.BEFOREEND);
 
-if (waypoints.length > 0) {
+const renderTask = (eventListComponent, point) => {
 
-  render(siteHeaderTripWrap, `<section class="trip-main__trip-info  trip-info"></section>`, `afterbegin`);
+  const eventComponent = new Event(point);
+  const eventEditComponent = new EventEdit(point);
 
-  const siteHeaderTrip = siteMainElement.querySelector(`.trip-main__trip-info`);
+  const replaceCardToForm = () => {
+    eventListComponent.replaceChild(eventEditComponent.getElement(), eventComponent.getElement());
+  };
 
-  render(siteHeaderTrip, createTripCost(waypoints), `afterbegin`);
-  render(siteHeaderTrip, createTripInfo(waypoints), `afterbegin`);
+  const replaceFormToCard = () => {
+    eventListComponent.replaceChild(eventComponent.getElement(), eventEditComponent.getElement());
+  };
 
-  render(siteContentEvents, createSortTemplate(), `beforeend`);
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceFormToCard();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
 
-  render(siteContentEvents, `<ul class="trip-events__list"></ul>`, `beforeend`);
+  eventComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceCardToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
 
-  const siteContentEventsList = siteMainElement.querySelector(`.trip-events__list`);
+  eventEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
 
-  render(siteContentEventsList, createEventEdit(waypoints[0]), `beforeend`);
-  render(siteContentEventsList, createEventAdd(waypoints[1]), `beforeend`);
+  render(eventListComponent, eventComponent.getElement(), RenderPosition.BEFOREEND);
+};
 
-  for (const point of waypoints) {
-    render(siteContentEventsList, createEvent(point), `beforeend`);
+const renderEventList = (listContainer, waypointList) => {
+  if (waypointList.length === 0) {
+    render(siteContentEvents, new EmptyEventList().getElement(), RenderPosition.BEFOREEND);
+    return;
   }
-} else {
-  render(siteContentEvents, createEmptyEventList(), `beforeend`);
-}
+
+  const eventListComponent = new EventList();
+  const siteHeaderTrip = siteMainElement.querySelector(`.trip-main__trip-info`);
+  render(siteHeaderTrip, new TripCost(waypointList).getElement(), RenderPosition.AFTERBEGIN);
+  render(siteHeaderTrip, new TripInfo(waypointList).getElement(), RenderPosition.AFTERBEGIN);
+  render(siteContentEvents, new SortTemplate().getElement(), RenderPosition.BEFOREEND);
+  render(siteContentEvents, eventListComponent.getElement(), RenderPosition.BEFOREEND);
+
+  waypointList.forEach((point) => renderTask(eventListComponent.getElement(), point));
+};
+
+renderEventList(siteMainElement, waypoints);
