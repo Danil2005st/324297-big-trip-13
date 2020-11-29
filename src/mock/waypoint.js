@@ -84,7 +84,7 @@ const calculateDifferenceTime = (begin, end) => {
 const generateTime = () => {
   const daysGap = getRandomInteger(-7, 7);
   const hoursGap = getRandomInteger(0, 48);
-  const minutesGap = getRandomInteger(0, 60);
+  const minutesGap = getRandomInteger(0 , 60);
   const beginTime = dayjs().add(daysGap, `day`);
   const endTime = beginTime.add(hoursGap, `hour`).add(minutesGap, `minute`);
 
