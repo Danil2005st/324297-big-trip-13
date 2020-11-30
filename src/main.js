@@ -6,6 +6,7 @@ import SortTemplate from "./view/sort.js";
 import EventList from "./view/event-list.js";
 import Event from "./view/event.js";
 import EventEdit from "./view/event-edit.js";
+//import {createEventAdd} from "./view/event-add.js";
 import EmptyEventList from "./view/list-empty.js";
 import {generatePoint} from "./mock/waypoint.js";
 import {render, RenderPosition} from "./utils.js";
@@ -54,6 +55,10 @@ const renderTask = (eventListComponent, point) => {
     evt.preventDefault();
     replaceFormToCard();
     document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  eventEditComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replaceFormToCard();
   });
 
   render(eventListComponent, eventComponent.getElement(), RenderPosition.BEFOREEND);
