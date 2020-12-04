@@ -13,9 +13,9 @@ const createPhotoList = (photos) => {
 const createTypesList = () => {
   return POINT_TYPES.map((type) => `
   <div class="event__type-item">
-                <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}">
-                <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
-              </div>`).join(``);
+    <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}">
+    <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+  </div>`).join(``);
 };
 
 const createOffers = (offers) => {
@@ -115,5 +115,4 @@ export default class EventAdd extends Abstract {
   getTemplate() {
     return createEventAdd(this._point);
   }
-
 }

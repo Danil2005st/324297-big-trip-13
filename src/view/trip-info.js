@@ -1,5 +1,5 @@
-import {createElement} from "../utils.js";
 import dayjs from "dayjs";
+import Abstract from "./abstract.js";
 
 const createTripInfo = (waypoints) => {
   let title;
@@ -33,26 +33,13 @@ const createTripInfo = (waypoints) => {
   </div>`;
 };
 
-export default class TripInfo {
+export default class TripInfo extends Abstract {
   constructor(waypoints) {
+    super();
     this._waypoints = (waypoints);
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfo(this._waypoints);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createTripCost = (waypoints) => {
   let totalPrice = 0;
@@ -10,26 +10,13 @@ const createTripCost = (waypoints) => {
   </p>`;
 };
 
-export default class TripCost {
+export default class TripCost extends Abstract {
   constructor(waypoints) {
+    super();
     this._waypoints = (waypoints);
-
-    this._element = null;
   }
 
   getTemplate() {
     return createTripCost(this._waypoints);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

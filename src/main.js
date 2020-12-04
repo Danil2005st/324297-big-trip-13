@@ -6,10 +6,9 @@ import SortTemplate from "./view/sort.js";
 import EventList from "./view/event-list.js";
 import EventView from "./view/event.js";
 import EventEdit from "./view/event-edit.js";
-//import {createEventAdd} from "./view/event-add.js";
 import EmptyEventList from "./view/list-empty.js";
 import {generatePoint} from "./mock/waypoint.js";
-import {render, RenderPosition, replace} from "./utils.js";
+import {render, RenderPosition, replace} from "./utils/render.js";
 
 const waypoints = new Array(20).fill().map(generatePoint);
 
