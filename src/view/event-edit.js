@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {POINT_TYPES, CITIES} from "../const.js";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -98,25 +98,30 @@ const createEventEdit = (point) => {
   </li>`;
 };
 
-export default class EventEdit {
+export default class EventEdit extends Abstract {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
+    this._eventHandler = this._eventHandler.bind(this);
   }
 
   getTemplate() {
     return createEventEdit(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _eventHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._eventHandler);
   }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._eventHandler);
+  }
+
 }

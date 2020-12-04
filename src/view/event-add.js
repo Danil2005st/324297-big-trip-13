@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {POINT_TYPES, CITIES} from "../const.js";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -105,25 +105,15 @@ const createEventAdd = (point) => {
   </li>`;
 };
 
-export default class EventAdd {
+
+export default class EventAdd extends Abstract {
   constructor(point) {
+    super();
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventAdd(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
 }

@@ -1,5 +1,5 @@
 import {FILTERS} from "../const.js";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 
 const createFilterList = () => {
   return FILTERS.map(({name, isActive}) => {
@@ -17,24 +17,9 @@ const createFilterTemplate = () =>
   </form>`
 ;
 
-export default class FilterTemplate {
-  constructor() {
-    this._element = null;
-  }
 
+export default class FilterTemplate extends Abstract {
   getTemplate() {
     return createFilterTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

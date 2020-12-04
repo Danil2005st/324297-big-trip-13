@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {CITIES, DESTINATIONS, POINT_TYPES} from "../const.js";
-import {getRandomInteger} from "../utils.js";
+import {getRandomInteger} from "../utils/common.js";
 
 const generatePrice = () => getRandomInteger(0, 1000);
 
