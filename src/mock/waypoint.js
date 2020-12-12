@@ -2,20 +2,18 @@ import dayjs from "dayjs";
 import {CITIES, DESTINATIONS, POINT_TYPES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 const generatePrice = () => getRandomInteger(0, 1000);
-
 const generateTypePoint = () => {
   const randomIndex = getRandomInteger(0, POINT_TYPES.length - 1);
 
   return POINT_TYPES[randomIndex];
 };
-
 const getRandomCity = () => {
   const randomIndex = getRandomInteger(0, CITIES.length - 1);
 
   return CITIES[randomIndex];
 };
-
 const offers = new Map();
 
 for (const type of POINT_TYPES) {
@@ -97,6 +95,7 @@ const generateTime = () => {
 
 export const generatePoint = () => {
   return {
+    id: generateId(),
     type: generateTypePoint(),
     city: getRandomCity(),
     offers: getOffers(generateTypePoint()),
