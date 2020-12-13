@@ -17,7 +17,26 @@ const createSortTemplate = () =>
 ;
 
 export default class SortTemplate extends Abstract {
+  constructor() {
+    super();
+
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+  }
+
   getTemplate() {
     return createSortTemplate();
+  }
+
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
+
+    this._callback.sortTypeChange(evt.target.value);
+  }
+
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener(`change`, this._sortTypeChangeHandler);
   }
 }

@@ -16,6 +16,12 @@ export const FILTERS = [
   }
 ];
 
+export const SortType = {
+  DEFAULT: `sort-day`,
+  PRICE: `sort-price`,
+  TIME: `sort-time`
+};
+
 export const SORTS = [
   {
     name: `Day`,
