@@ -37,6 +37,8 @@ export default class Trip {
   }
 
   _handleTaskChange(updatedPoint) {
+    console.log(updatedPoint);
+
     this._tripContainer = updateItem(this._tripPoints, updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }

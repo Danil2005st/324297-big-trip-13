@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import {POINT_TYPES, CITIES} from "../const.js";
-import Abstract from "./abstract.js";
+import SmartView from "./smart.js";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -17,7 +17,7 @@ const createTypesList = () => {
 const createOffers = (offers) => {
   return offers.map(({name, price, isActive}) => {
     return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}" type="checkbox" name="event-offer-luggage" ${isActive ? `checked` : `` }>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}" type="checkbox" name="${name}" ${isActive ? `checked` : `` }>
         <label class="event__offer-label" for="event-offer-${name}">
           <span class="event__offer-title">${name}</span>
           &plus;&euro;&nbsp;
@@ -27,8 +27,8 @@ const createOffers = (offers) => {
   }).join(``);
 };
 
-const createEventEdit = (point) => {
-  const {type, city, offers, destinations, time, price} = point;
+const createEventEdit = (data) => {
+  const {type, city, offers, destinations, time, price} = data;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -98,16 +98,57 @@ const createEventEdit = (point) => {
   </li>`;
 };
 
-export default class EventEdit extends Abstract {
+export default class EventEdit extends SmartView {
   constructor(point) {
     super();
-    this._point = point;
+    this._data = EventEdit.parseTaskToData(point);
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._priceInputHandler = this._priceInputHandler.bind(this);
+    this._cityInputHandler = this._cityInputHandler.bind(this);
+    this._typeEventChangeHandler = this._typeEventChangeHandler.bind(this);
+    this._offersChangeHandler = this._offersChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createEventEdit(this._point);
+    return createEventEdit(this._data);
+  }
+
+  reset(point) {
+    this.updateData(
+        EventEdit.parseTaskToData(point)
+    );
+  }
+
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+
+    this.getElement()
+    .querySelector(`.event__input--price`)
+    .addEventListener(`input`, this._priceInputHandler);
+
+    this.getElement()
+    .querySelector(`.event__input--destination`)
+    .addEventListener(`input`, this._cityInputHandler);
+
+    this.getElement()
+    .querySelector(`.event__available-offers`)
+    .addEventListener(`change`, this._offersChangeHandler);
+
+    this.getElement()
+    .querySelector(`.event__type-group`)
+    .addEventListener(`change`, this._typeEventChangeHandler);
+
+    this.getElement()
+    .querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, this._editClickHandler);
   }
 
   _editClickHandler(evt) {
@@ -117,16 +158,73 @@ export default class EventEdit extends Abstract {
 
   setEditClickHandler(callback) {
     this._callback.editClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+    //this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    this._callback.formSubmit(EventEdit.parseDataToTask(this._data));
+  }
+
+  _priceInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      price: evt.target.value
+    }, true);
+  }
+
+  _cityInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      city: evt.target.value
+    }, true);
+  }
+
+  _typeEventChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value
+    });
+  }
+
+  _offersChangeHandler(evt) {
+    evt.preventDefault();
+    let index;
+
+    const newOffers = Object.assign(
+        {},
+        this._data.offers
+    );
+
+    for (let offer of newOffers) {
+      if (offer.name.includes(evt.target.name)) {
+        index = this._data.offers.indexOf(offer);
+      }
+    }
+
+    newOffers[index].isActive = !newOffers[index].isActive;
+
+    this.updateData({
+      offers: newOffers
+    });
+
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
+  }
+
+  static parseTaskToData(point) {
+    return Object.assign(
+        {},
+        point
+    );
+  }
+
+  static parseDataToTask(data) {
+    data = Object.assign({}, data);
+
+    return data;
   }
 }
