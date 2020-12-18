@@ -24,6 +24,7 @@ export default class Point {
   }
 
   init(point) {
+    console.log(point);
     this._point = point;
 
     const prevEventComponent = this._eventComponent;
@@ -108,6 +109,7 @@ export default class Point {
   }
 
   _handleCloseClick() {
+    this._eventEditComponent.reset(this._point);
     this._replaceFormToCard();
   }
 }

@@ -5,9 +5,9 @@ import {render, RenderPosition} from "./utils/render.js";
 import TripPresenter from "./presenter/trip.js";
 import {sortPointDate} from "./utils/common.js";
 
-const waypoints = new Array(10).fill().map(generatePoint);
+const waypoints = new Array(3).fill().map(generatePoint);
 
-waypoints.sort(sortPointDate);
+//waypoints.sort(sortPointDate);
 
 const siteMainElement = document.querySelector(`.page-body`);
 const siteHeaderElement = siteMainElement.querySelector(`.trip-main__trip-controls`);

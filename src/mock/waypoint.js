@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
-import {CITIES, DESTINATIONS, POINT_TYPES} from "../const.js";
+import {DESTINATIONS, POINT_TYPES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
+
 
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 const generatePrice = () => getRandomInteger(0, 1000);
@@ -9,30 +10,6 @@ const generateTypePoint = () => {
 
   return POINT_TYPES[randomIndex];
 };
-const getRandomCity = () => {
-  const randomIndex = getRandomInteger(0, CITIES.length - 1);
-
-  return CITIES[randomIndex];
-};
-const offers = new Map();
-
-for (const type of POINT_TYPES) {
-  offers.set(type, {
-    'Add luggage': getRandomInteger(15, 40),
-    'Switch to comfort': getRandomInteger(7, 40),
-    'Choose seats': getRandomInteger(2, 40),
-    'Add meal': getRandomInteger(10, 40),
-    'Travel by train': getRandomInteger(5, 40),
-  });
-}
-
-const getOffers = (type) => Object.entries(offers.get(type)).map(([name, price]) => {
-  return {
-    name,
-    price,
-    isActive: Boolean(getRandomInteger(0, 1)),
-  };
-});
 
 const getDestinations = () => {
   const description = DESTINATIONS.split(`. `);
@@ -55,12 +32,87 @@ const getPhotos = () => {
   return photos;
 };
 
-const generateDestinations = () => {
-  return {
+export const CITY = [
+  {
+    city: `Paris`,
     description: getDestinations(),
     photo: getPhotos(),
+  },
+  {
+    city: `Vein`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Amsterdam`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Sochi`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Koktebel`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Prague`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Tokyo`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  },
+  {
+    city: `Mexico City`,
+    description: getDestinations(),
+    photo: getPhotos(),
+  }
+];
+
+
+const getRandomCity = () => {
+  const randomIndex = getRandomInteger(0, CITY.length - 1);
+
+  return {
+    city: CITY[randomIndex].city,
+    description: CITY[randomIndex].description,
+    photo: CITY[randomIndex].photo,
   };
 };
+
+
+const generateDestinations = () => {
+  return {
+    description: 'generateDestinations-description',
+    photo: 'generateDestinations-photo',
+  };
+};
+
+const offers = new Map();
+
+for (const type of POINT_TYPES) {
+  offers.set(type, {
+    'Add luggage': getRandomInteger(15, 40),
+    'Switch to comfort': getRandomInteger(7, 40),
+    'Choose seats': getRandomInteger(2, 40),
+    'Add meal': getRandomInteger(10, 40),
+    'Travel by train': getRandomInteger(5, 40),
+  });
+}
+
+const getOffers = (type) => Object.entries(offers.get(type)).map(([name, price]) => {
+  return {
+    name,
+    price,
+    isActive: Boolean(getRandomInteger(0, 1)),
+  };
+});
 
 const calculateDifferenceTime = (begin, end) => {
   const days = end.diff(begin, `day`);
@@ -99,7 +151,6 @@ export const generatePoint = () => {
     type: generateTypePoint(),
     city: getRandomCity(),
     offers: getOffers(generateTypePoint()),
-    destinations: generateDestinations(),
     time: generateTime(),
     price: generatePrice(),
     isFavorite: Boolean(getRandomInteger(0, 1)),

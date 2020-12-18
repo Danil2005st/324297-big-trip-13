@@ -1,9 +1,14 @@
 import dayjs from "dayjs";
+import {CITY} from "../mock/waypoint.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
+};
+
+const createPhotoList = (photos) => {
+  return photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``);
 };
 
 const createTypesList = () => {
@@ -28,7 +33,8 @@ const createOffers = (offers) => {
 };
 
 const createEventEdit = (data) => {
-  const {type, city, offers, destinations, time, price} = data;
+  const {type, city, offers, time, price} = data;
+
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -52,7 +58,7 @@ const createEventEdit = (data) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.city}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${createCitiesList()}
           </datalist>
@@ -91,7 +97,13 @@ const createEventEdit = (data) => {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destinations.description}</p>
+          <p class="event__destination-description">${city.description}</p>
+
+          <div class="event__photos-container">
+            <div class="event__photos-tape">
+              ${createPhotoList(city.photo)}
+            </div>
+          </div>
         </section>
       </section>
     </form>
@@ -175,9 +187,28 @@ export default class EventEdit extends SmartView {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
+    let cityDescription = CITY.filter((city) => city.city === evt.target.value);
+
+    console.log(cityDescription);
+
+    if (!cityDescription.length) {
+      return;
+    }
+
+    const newCity = Object.assign(
+        {},
+        {
+          city: evt.target.value,
+          description: cityDescription[0].description,
+          photos: cityDescription[0].photo,
+        }
+    );
+
+    //console.log(newCity)
+
     this.updateData({
-      city: evt.target.value
-    }, true);
+      city: newCity,
+    });
   }
 
   _typeEventChangeHandler(evt) {
@@ -189,24 +220,26 @@ export default class EventEdit extends SmartView {
 
   _offersChangeHandler(evt) {
     evt.preventDefault();
-    let index;
+    /*let index;
 
     const newOffers = Object.assign(
         {},
         this._data.offers
-    );
+    );*/
 
-    for (let offer of newOffers) {
+    //console.log(newOffers);
+
+    /*for (let offer in newOffers) {
       if (offer.name.includes(evt.target.name)) {
         index = this._data.offers.indexOf(offer);
       }
-    }
+    }*/
 
-    newOffers[index].isActive = !newOffers[index].isActive;
+   /* newOffers[index].isActive = !newOffers[index].isActive;
 
     this.updateData({
       offers: newOffers
-    });
+    });*/
 
   }
 
