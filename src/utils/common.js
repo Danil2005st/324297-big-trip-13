@@ -8,10 +8,6 @@ export const getRandomInteger = (a = 0, b = 1) => {
 };
 
 export const updateItem = (items, update) => {
-
-  console.log(items)
-  console.log(update)
-
   const index = items.findIndex((item) => item.id === update.id);
 
   if (index === -1) {
