@@ -5,7 +5,7 @@ import {render, RenderPosition} from "./utils/render.js";
 import TripPresenter from "./presenter/trip.js";
 import {sortPointDate} from "./utils/common.js";
 
-const waypoints = new Array(20).fill().map(generatePoint);
+const waypoints = new Array(1).fill().map(generatePoint);
 
 waypoints.sort(sortPointDate);
 

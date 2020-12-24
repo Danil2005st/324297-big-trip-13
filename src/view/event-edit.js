@@ -2,6 +2,8 @@ import dayjs from "dayjs";
 import {CITY, POINT_TYPE} from "../mock/waypoint.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -35,6 +37,9 @@ const createOffers = (offers) => {
 
 const createEventEdit = (data) => {
   const {type, city, time, price} = data;
+  //console.log(data, 'data')
+  //console.log(time.begin, 'time.begin')
+ // console.log(time.end, 'time.end')
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -114,6 +119,9 @@ export default class EventEdit extends SmartView {
   constructor(point) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
+    this._datepicker = null;
+
+    console.log(this._point);
 
     this._data = EventEdit.parseTaskToData(point);
     this._editClickHandler = this._editClickHandler.bind(this);
@@ -122,8 +130,11 @@ export default class EventEdit extends SmartView {
     this._cityInputHandler = this._cityInputHandler.bind(this);
     this._typeEventChangeHandler = this._typeEventChangeHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   getTemplate() {
@@ -139,7 +150,72 @@ export default class EventEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setDatepicker() {
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+
+    if (this._datepickerEnd) {
+      this._datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
+
+    this._datepickerStart = flatpickr(
+      this.getElement().querySelector(`#event-start-time-1`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: `d/m/y H:i`,
+        defaultDate: this._data.time.begin,
+        onChange: this._startDateChangeHandler
+      }
+    );
+
+    const calculateDifferenceTime = (begin, end) => {
+      const days = end.diff(begin, `day`);
+      const hours = end.diff(begin, `hour`) % 24;
+      const minutes = end.diff(begin, `minute`) % 60;
+      let date;
+
+      if (days > 0) {
+        date = `${days}D ${hours}H ${minutes}M`;
+      } else if (hours > 0) {
+        date = `${hours}H ${minutes}M`;
+      } else {
+        date = `${minutes}M`;
+      }
+
+      console.log(days, hours, minutes);
+
+      return date;
+    };
+
+    this._datepickerEnd = flatpickr(
+      this.getElement().querySelector(`#event-end-time-1`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: `d/m/y H:i`,
+        defaultDate: this._data.time.end,
+        onChange: this._endDateChangeHandler,
+        minDate: dayjs(this._data.time.begin).toDate(),
+        onClose: () => {
+          console.log(calculateDifferenceTime(dayjs(this._data.time.begin), dayjs(this._datepickerEnd.selectedDates[0])))
+
+          console.log(this._datepickerEnd.selectedDates[0], 'this._datepickerEnd.selectedDates[0]')
+          console.log(this._data.time.begin, 'this._datepickerStart.defaultDate')
+
+
+
+          console.log( '-------------',dayjs(this._datepickerEnd.selectedDates[0] - this._data.time.begin));
+        }
+      }
+    );
   }
 
   _setInnerHandlers() {
@@ -163,6 +239,57 @@ export default class EventEdit extends SmartView {
     this.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, this._editClickHandler);
+  }
+
+  _startDateChangeHandler([userDate]) {
+    const newTime = Object.assign(
+      {},
+      {
+        begin: dayjs(userDate),
+        end: dayjs(this._data.time.end),
+        difference: this._data.time.difference,
+      }
+    );
+
+    this.updateData({
+      time: newTime
+    }, true);
+
+    this._datepickerEnd = flatpickr(
+      this.getElement().querySelector(`#event-end-time-1`),
+      {
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: `d/m/y H:i`,
+        defaultDate: this._datepickerStart.selectedDates[0],
+        onChange: this._endDateChangeHandler,
+        minDate: this._datepickerStart.selectedDates[0],
+        onClose: () => {
+
+          console.log(this._datepickerEnd.selectedDates[0], 'this._datepickerEnd.selectedDates[0]')
+          console.log(this._datepickerStart.selectedDates[0], 'this._datepickerStart.defaultDate')
+
+
+
+          console.log( '++++++',dayjs(this._datepickerEnd.selectedDates[0] - this._datepickerStart.selectedDates[0]));
+        }
+      }
+    );
+  }
+
+  _endDateChangeHandler([userDate]) {
+    const newTime = Object.assign(
+      {},
+      {
+        begin: dayjs(this._data.time.begin),
+        end: dayjs(userDate),
+        difference: this._data.time.difference,
+      }
+    );
+
+    this.updateData({
+      time: newTime
+    }, true);
   }
 
   _editClickHandler(evt) {
