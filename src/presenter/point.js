@@ -24,9 +24,7 @@ export default class Point {
   }
 
   init(point) {
-    console.log(point);
     this._point = point;
-
     const prevEventComponent = this._eventComponent;
     const prevEventEditComponent = this._eventEditComponent;
 

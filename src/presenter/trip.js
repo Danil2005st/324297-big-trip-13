@@ -2,7 +2,7 @@ import TripInfo from "../view/trip-info.js";
 import TripCost from "../view/trip-cost.js";
 import SortTemplate from "../view/sort.js";
 import EventList from "../view/event-list.js";
-import {updateItem, sortPointPrice, sortPointTime} from "../utils/common.js";
+import {sortPointPrice, sortPointTime} from "../utils/common.js";
 import EmptyEventList from "../view/list-empty.js";
 import PointPresenter from "./point.js";
 import {render, RenderPosition} from "../utils/render.js";
@@ -37,9 +37,6 @@ export default class Trip {
   }
 
   _handleTaskChange(updatedPoint) {
-    console.log(updatedPoint);
-
-    this._tripContainer = updateItem(this._tripPoints, updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }
 

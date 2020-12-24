@@ -32,7 +32,7 @@ const createOffers = (offers) => {
 };
 
 const createEventAdd = (point) => {
-  const {type, city, offers, destinations, time} = point;
+  const {type, city, offers, time} = point;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -54,7 +54,7 @@ const createEventAdd = (point) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
+            ${type.type}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.city}" list="destination-list-1">
           <datalist id="destination-list-1">
