@@ -7,22 +7,22 @@ const createTripInfo = (waypoints) => {
 
   switch (waypoints.length) {
     case 1:
-      title = `${waypoints[0].city}`;
+      title = `${waypoints[0].city.city}`;
       period = `${dayjs(waypoints[0].time.begin).format(`DD MMM`)} - ${dayjs(waypoints[0].time.end).format(`DD MMM`)}`;
       break;
 
     case 2:
-      title = `${waypoints[0].city} - ${waypoints[1].city}`;
+      title = `${waypoints[0].city.city} - ${waypoints[1].city.city}`;
       period = `${dayjs(waypoints[0].time.begin).format(`DD MMM`)} - ${dayjs(waypoints[1].time.end).format(`DD MMM`)}`;
       break;
 
     case 3:
-      title = `${waypoints[0].city} - ${waypoints[1].city} - ${waypoints[waypoints.length - 1].city}`;
+      title = `${waypoints[0].city.city} - ${waypoints[1].city.city} - ${waypoints[waypoints.length - 1].city.city}`;
       period = `${dayjs(waypoints[0].time.begin).format(`DD MMM`)} - ${dayjs(waypoints[waypoints.length - 1].time.end).format(`DD MMM`)}`;
       break;
 
     default:
-      title = `${waypoints[0].city} - ... - ${waypoints[waypoints.length - 1].city}`;
+      title = `${waypoints[0].city.city} - ... - ${waypoints[waypoints.length - 1].city.city}`;
       period = `${dayjs(waypoints[0].time.begin).format(`DD MMM`)} - ${dayjs(waypoints[waypoints.length - 1].time.end).format(`DD MMM`)}`;
       break;
   }

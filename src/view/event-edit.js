@@ -37,9 +37,6 @@ const createOffers = (offers) => {
 
 const createEventEdit = (data) => {
   const {type, city, time, price} = data;
-  //console.log(data, 'data')
-  //console.log(time.begin, 'time.begin')
- // console.log(time.end, 'time.end')
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -120,8 +117,7 @@ export default class EventEdit extends SmartView {
     super();
     this._point = JSON.parse(JSON.stringify(point));
     this._datepicker = null;
-
-    console.log(this._point);
+    this._updateDifferent;
 
     this._data = EventEdit.parseTaskToData(point);
     this._editClickHandler = this._editClickHandler.bind(this);
@@ -154,6 +150,20 @@ export default class EventEdit extends SmartView {
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
+  _calculateDifferenceTime(begin, end) {
+    const days = end.diff(begin, `day`);
+    const hours = end.diff(begin, `hour`) % 24;
+    const minutes = end.diff(begin, `minute`) % 60;
+
+    if (days > 0) {
+      this._updateDifferent = `${days}D ${hours}H ${minutes}M`;
+    } else if (hours > 0) {
+      this._updateDifferent = `${hours}H ${minutes}M`;
+    } else {
+      this._updateDifferent = `${minutes}M`;
+    }
+  }
+
   _setDatepicker() {
     if (this._datepickerStart) {
       this._datepickerStart.destroy();
@@ -166,60 +176,30 @@ export default class EventEdit extends SmartView {
     }
 
     this._datepickerStart = flatpickr(
-      this.getElement().querySelector(`#event-start-time-1`),
-      {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: `d/m/y H:i`,
-        defaultDate: this._data.time.begin,
-        onChange: this._startDateChangeHandler
-      }
+        this.getElement().querySelector(`#event-start-time-1`),
+        {
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.time.begin,
+          onChange: this._startDateChangeHandler
+        }
     );
 
-    const calculateDifferenceTime = (begin, end) => {
-      const days = end.diff(begin, `day`);
-      const hours = end.diff(begin, `hour`) % 24;
-      const minutes = end.diff(begin, `minute`) % 60;
-      let date;
-
-      if (days > 0) {
-        date = `${days}D ${hours}H ${minutes}M`;
-      } else if (hours > 0) {
-        date = `${hours}H ${minutes}M`;
-      } else {
-        date = `${minutes}M`;
-      }
-
-      console.log(days, hours, minutes);
-
-      return date;
-    };
-
     this._datepickerEnd = flatpickr(
-      this.getElement().querySelector(`#event-end-time-1`),
-      {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: `d/m/y H:i`,
-        defaultDate: this._data.time.end,
-        onChange: this._endDateChangeHandler,
-        minDate: dayjs(this._data.time.begin).toDate(),
-        onClose: () => {
-          console.log(calculateDifferenceTime(dayjs(this._data.time.begin), dayjs(this._datepickerEnd.selectedDates[0])))
-
-          console.log(this._datepickerEnd.selectedDates[0], 'this._datepickerEnd.selectedDates[0]')
-          console.log(this._data.time.begin, 'this._datepickerStart.defaultDate')
-
-
-
-          console.log( '-------------',dayjs(this._datepickerEnd.selectedDates[0] - this._data.time.begin));
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._data.time.end,
+          onChange: this._endDateChangeHandler,
+          minDate: dayjs(this._data.time.begin).toDate()
         }
-      }
     );
   }
 
   _setInnerHandlers() {
-
     this.getElement()
     .querySelector(`.event__input--price`)
     .addEventListener(`input`, this._priceInputHandler);
@@ -243,12 +223,12 @@ export default class EventEdit extends SmartView {
 
   _startDateChangeHandler([userDate]) {
     const newTime = Object.assign(
-      {},
-      {
-        begin: dayjs(userDate),
-        end: dayjs(this._data.time.end),
-        difference: this._data.time.difference,
-      }
+        {},
+        {
+          begin: dayjs(userDate),
+          end: dayjs(this._data.time.end),
+          difference: this._data.time.difference,
+        }
     );
 
     this.updateData({
@@ -256,40 +236,35 @@ export default class EventEdit extends SmartView {
     }, true);
 
     this._datepickerEnd = flatpickr(
-      this.getElement().querySelector(`#event-end-time-1`),
-      {
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: `d/m/y H:i`,
-        defaultDate: this._datepickerStart.selectedDates[0],
-        onChange: this._endDateChangeHandler,
-        minDate: this._datepickerStart.selectedDates[0],
-        onClose: () => {
-
-          console.log(this._datepickerEnd.selectedDates[0], 'this._datepickerEnd.selectedDates[0]')
-          console.log(this._datepickerStart.selectedDates[0], 'this._datepickerStart.defaultDate')
-
-
-
-          console.log( '++++++',dayjs(this._datepickerEnd.selectedDates[0] - this._datepickerStart.selectedDates[0]));
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          enableTime: true,
+          time_24hr: true,
+          dateFormat: `d/m/y H:i`,
+          defaultDate: this._datepickerStart.selectedDates[0],
+          onChange: this._endDateChangeHandler,
+          minDate: this._datepickerStart.selectedDates[0]
         }
-      }
     );
   }
 
   _endDateChangeHandler([userDate]) {
+    this._calculateDifferenceTime(dayjs(this._data.time.begin), dayjs(this._datepickerEnd.selectedDates[0]));
+
     const newTime = Object.assign(
-      {},
-      {
-        begin: dayjs(this._data.time.begin),
-        end: dayjs(userDate),
-        difference: this._data.time.difference,
-      }
+        {},
+        {
+          begin: dayjs(this._data.time.begin),
+          end: dayjs(userDate),
+          difference: this._updateDifferent,
+        }
     );
 
     this.updateData({
       time: newTime
     }, true);
+
+
   }
 
   _editClickHandler(evt) {

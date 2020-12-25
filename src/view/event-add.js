@@ -105,7 +105,6 @@ const createEventAdd = (point) => {
   </li>`;
 };
 
-
 export default class EventAdd extends Abstract {
   constructor(point) {
     super();

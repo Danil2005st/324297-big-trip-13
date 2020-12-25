@@ -88,15 +88,6 @@ const getRandomCity = () => {
   };
 };
 
-/*
-const generateDestinations = () => {
-  return {
-    description: 'generateDestinations-description',
-    photo: 'generateDestinations-photo',
-  };
-};*/
-
-
 const offers = new Map();
 
 for (const type of POINT_TYPES) {
