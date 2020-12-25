@@ -116,8 +116,9 @@ export default class EventEdit extends SmartView {
   constructor(point) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
-    this._datepicker = null;
-    this._updateDifferent;
+    this._datepickerEnd = null;
+    this._datepickerStart = null;
+    this._updateDifferent = this._point.time.difference;
 
     this._data = EventEdit.parseTaskToData(point);
     this._editClickHandler = this._editClickHandler.bind(this);
