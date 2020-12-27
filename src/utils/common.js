@@ -6,7 +6,7 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
-
+/*
 export const updateItem = (items, update) => {
   const index = items.findIndex((item) => item.id === update.id);
 
@@ -19,7 +19,7 @@ export const updateItem = (items, update) => {
     update,
     ...items.slice(index + 1)
   ];
-};
+};*/
 
 export const sortPointDate = (pointA, pointB) => {
   return pointA.time.begin.valueOf() - pointB.time.begin.valueOf();
