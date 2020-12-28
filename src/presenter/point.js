@@ -22,6 +22,7 @@ export default class Point {
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
   init(point) {
@@ -35,7 +36,7 @@ export default class Point {
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setEditClickHandler(this._handleCloseClick);
     this._eventComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this._eventList, this._eventComponent, RenderPosition.BEFOREEND);
@@ -104,14 +105,22 @@ export default class Point {
     this._replaceCardToForm();
   }
 
-  _handleFormSubmit(point) {
+  _handleFormSubmit(update) {
     this._changeData(
       UserAction.UPDATE_TASK,
       UpdateType.MINOR,
-      point
+      update
     );
     //this._changeData(point);
     this._replaceFormToCard();
+  }
+
+  _handleDeleteClick(point) {
+    this._changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      point
+    );
   }
 
   _handleCloseClick() {

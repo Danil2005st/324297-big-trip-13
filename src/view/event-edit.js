@@ -116,12 +116,15 @@ export default class EventEdit extends SmartView {
   constructor(point) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
+    console.log(this._point);
+
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = this._point.time.difference;
 
     this._data = EventEdit.parseTaskToData(point);
     this._editClickHandler = this._editClickHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
@@ -138,6 +141,19 @@ export default class EventEdit extends SmartView {
     return createEventEdit(this._data);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepickerStart) {
+      this._datepickerStart.destroy();
+      this._datepickerStart = null;
+    }
+    if (this._datepickerEnd) {
+      this._datepickerEnd.destroy();
+      this._datepickerEnd = null;
+    }
+  }
+
   reset() {
     this.updateData(
         EventEdit.parseTaskToData(this._point)
@@ -149,6 +165,7 @@ export default class EventEdit extends SmartView {
     this._setInnerHandlers();
     this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _calculateDifferenceTime(begin, end) {
@@ -268,6 +285,16 @@ export default class EventEdit extends SmartView {
   _editClickHandler(evt) {
     evt.preventDefault();
     this._callback.editClick();
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseDataToTask(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
 
   setEditClickHandler(callback) {

@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import {DESTINATIONS, POINT_TYPES} from "../const.js";
 import {getRandomInteger} from "../utils/common.js";
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 const generatePrice = () => getRandomInteger(0, 1000);
 
 const generateTypePoint = () => {

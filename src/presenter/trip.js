@@ -5,12 +5,16 @@ import EventList from "../view/event-list.js";
 import {sortPointPrice, sortPointTime, sortPointDate} from "../utils/common.js";
 import EmptyEventList from "../view/list-empty.js";
 import PointPresenter from "./point.js";
+import PointNewPresenter from "./point-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {SortType, UpdateType, UserAction} from "../const.js";
+import {filter} from "../utils/filter.js";
+import {FilterType, SortType, UpdateType, UserAction} from "../const.js";
+
 
 export default class Trip {
-  constructor(siteMainElement, pointsModel) {
+  constructor(siteMainElement, pointsModel, filterModel) {
     this._pointsModel = pointsModel;
+    this._filterModel = filterModel;
     this._siteMainElement = siteMainElement;
     this._siteContentEvents = this._siteMainElement.querySelector(`.trip-events`);
     this._siteHeaderTrip = this._siteMainElement.querySelector(`.trip-main__trip-info`);
@@ -30,6 +34,9 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
+    this._pointNewPresenter = new PointNewPresenter(this._eventList, this._handleViewAction);
   }
 
   init() {
@@ -38,19 +45,30 @@ export default class Trip {
 
     render(this._siteContentEvents, this._eventList, RenderPosition.BEFOREEND);
 
+
     this._renderList();
   }
 
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._pointNewPresenter.init();
+  }
+
   _getPoints() {
+    const filterType = this._filterModel.getFilter();
+    const points = this._pointsModel.getPoints();
+    const filtredPoints = filter[filterType](points);
+
     switch (this._currentSortType) {
       case SortType.PRICE:
-        return this._pointsModel.getPoints().slice().sort(sortPointPrice);
+        return filtredPoints.sort(sortPointPrice);
       case SortType.TIME:
-        return this._pointsModel.getPoints().slice().sort(sortPointTime);
+        return filtredPoints.sort(sortPointTime);
     }
 
 
-    return this._pointsModel.getPoints().sort(sortPointDate);
+    return filtredPoints.sort(sortPointDate);
   }
 
   /*_handleTaskChange(updatedPoint) {
@@ -88,6 +106,8 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._pointNewPresenter.destroy();
+
     Object
     .values(this._pointPresenter)
     .forEach((presenter) => presenter.resetView());
@@ -153,6 +173,7 @@ export default class Trip {
   _clearTrip({resetSortType = false} = {}) {
    // const taskCount = this._getTasks().length;
 
+    this._pointNewPresenter.destroy();
     Object
     .values(this._pointPresenter)
     .forEach((presenter) => presenter.destroy());
@@ -163,8 +184,6 @@ export default class Trip {
     remove(this._tripCost);
     remove(this._tripInfo);
     //remove(this._loadMoreButtonComponent);
-
-
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -190,10 +209,10 @@ export default class Trip {
     this._renderPoints(this._getPoints());
   }
 
-  _clearPointList() {
+ /* _clearPointList() {
     Object
     .values(this._pointPresenter)
     .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
-  }
+  }*/
 }
