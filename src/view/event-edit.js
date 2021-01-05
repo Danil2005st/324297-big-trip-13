@@ -1,9 +1,30 @@
 import dayjs from "dayjs";
-import {CITY, POINT_TYPE} from "../mock/waypoint.js";
+import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+//import {getRandomInteger} from "../utils/common";
+
+const BLANK_POINT = {
+  id: generateId(),
+  type: {
+    type: `Taxi`,
+    offers: []
+  },
+  city: {
+    city: ``,
+    description: ``,
+    photos: []
+  },
+  time: {
+    begin: dayjs(),
+    end: dayjs(),
+    difference: ``
+  },
+  price: ``,
+  isFavorite: false,
+};
 
 const createCitiesList = () => {
   return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
@@ -38,7 +59,8 @@ const createOffers = (offers) => {
 const createEventEdit = (data) => {
   const {type, city, time, price} = data;
 
-  return `<li class="trip-events__item">
+
+  const tripEvent = `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
@@ -89,7 +111,8 @@ const createEventEdit = (data) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
+        <section class="event__section  event__section--offers ${type.offers.length > 0 ? '' : 'visually-hidden'}">
+
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
@@ -97,7 +120,7 @@ const createEventEdit = (data) => {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination">
+        <section class="event__section  event__section--destination ${city.description ? '' : 'visually-hidden'}">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${city.description}</p>
 
@@ -110,10 +133,13 @@ const createEventEdit = (data) => {
       </section>
     </form>
   </li>`;
+
+  return tripEvent;
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point) {
+  constructor(point = BLANK_POINT) {
+
     super();
     this._point = JSON.parse(JSON.stringify(point));
     console.log(this._point);

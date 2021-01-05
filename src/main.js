@@ -8,7 +8,7 @@ import TripPresenter from "./presenter/trip.js";
 import FilterPresenter from "./presenter/filter.js";
 import {sortPointDate} from "./utils/common.js";
 
-const waypoints = new Array(10).fill().map(generatePoint);
+const waypoints = new Array(2).fill().map(generatePoint);
 /*
 const filters = [
   {

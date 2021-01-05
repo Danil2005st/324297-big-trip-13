@@ -174,6 +174,7 @@ export default class Trip {
    // const taskCount = this._getTasks().length;
 
     this._pointNewPresenter.destroy();
+
     Object
     .values(this._pointPresenter)
     .forEach((presenter) => presenter.destroy());
