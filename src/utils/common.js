@@ -30,3 +30,5 @@ export const isPointPast = (time) => {
 export const isPointFuture = (time) => {
   return time === null ? false : dayjs(time).isSameOrAfter(dayjs(), `D`);
 };
+
+

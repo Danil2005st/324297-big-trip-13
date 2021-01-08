@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { InputOnlyNumbers } from "input-only-numbers";
 import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
@@ -142,7 +143,6 @@ export default class EventEdit extends SmartView {
 
     super();
     this._point = JSON.parse(JSON.stringify(point));
-    console.log(this._point);
 
     this._datepickerEnd = null;
     this._datepickerStart = null;
@@ -304,8 +304,6 @@ export default class EventEdit extends SmartView {
     this.updateData({
       time: newTime
     }, true);
-
-
   }
 
   _editClickHandler(evt) {

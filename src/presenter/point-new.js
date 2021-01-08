@@ -12,7 +12,8 @@ export default class PointNew {
 
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);3
+    this._setInputFilter = this._setInputFilter.bind(this);
   }
 
   init() {
@@ -20,16 +21,17 @@ export default class PointNew {
       return;
     }
 
-    console.log(this._taskEditComponent, '1this._taskEditComponent');
     this._taskEditComponent = new EventEdit();
-    console.log(this._taskEditComponent, '2this._taskEditComponent');
-
     this._taskEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._taskEditComponent.setDeleteClickHandler(this._handleDeleteClick);
+
 
     render(this._taskListContainer, this._taskEditComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+    this._setInputFilter(document.getElementById("event-price-1"), function(value) {
+      return /^-?\d*$/.test(value);
+    });
   }
 
   destroy() {
@@ -63,5 +65,22 @@ export default class PointNew {
       evt.preventDefault();
       this.destroy();
     }
+  }
+
+  _setInputFilter(textbox, inputFilter) {
+    ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
+      textbox.addEventListener(event, function() {
+        if (inputFilter(this.value)) {
+          this.oldValue = this.value;
+          this.oldSelectionStart = this.selectionStart;
+          this.oldSelectionEnd = this.selectionEnd;
+        } else if (this.hasOwnProperty("oldValue")) {
+          this.value = this.oldValue;
+          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+        } else {
+          this.value = "";
+        }
+      });
+    });
   }
 }
