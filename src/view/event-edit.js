@@ -44,16 +44,15 @@ const createTypesList = () => {
 };
 
 const createOffers = (offers) => {
-
   return offers.map(({name, price, isActive}) => {
     return `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}" type="checkbox" name="${name}" ${isActive ? `checked` : `` }>
-        <label class="event__offer-label" for="event-offer-${name}">
-          <span class="event__offer-title">${name}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </label>
-    </div>`;
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}" type="checkbox" name="${name}" ${isActive ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${name}">
+        <span class="event__offer-title">${name}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+  </div>`;
   }).join(``);
 };
 
@@ -144,16 +143,22 @@ export default class EventEdit extends SmartView {
     super();
     this._point = JSON.parse(JSON.stringify(point));
 
+    console.log(this._point , 'this._point  event-edit.js');
+
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = this._point.time.difference;
 
-    this._data = EventEdit.parseTaskToData(point);
+    this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
+
+    console.log(this._data,  ' this._data event-edit.js');
+
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
     this._cityInputHandler = this._cityInputHandler.bind(this);
+    this._validateCity = this._validateCity.bind(this);
     this._typeEventChangeHandler = this._typeEventChangeHandler.bind(this);
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
@@ -180,10 +185,10 @@ export default class EventEdit extends SmartView {
     }
   }
 
-  reset() {
+  reset(point) {
     this.updateData(
-        EventEdit.parseTaskToData(this._point)
-    );
+      EventEdit.parseTaskToData(point)
+    , false);
   }
 
 
@@ -246,6 +251,11 @@ export default class EventEdit extends SmartView {
     .querySelector(`.event__input--price`)
     .addEventListener(`input`, this._priceInputHandler);
 
+
+    this.getElement()
+    .querySelector(`.event__input--destination`)
+    .addEventListener(`focus`, this._validateCity);
+
     this.getElement()
     .querySelector(`.event__input--destination`)
     .addEventListener(`input`, this._cityInputHandler);
@@ -261,6 +271,52 @@ export default class EventEdit extends SmartView {
     this.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, this._editClickHandler);
+
+
+
+  }
+
+  _setInputFilter(textbox, inputFilter) {
+    textbox.addEventListener(`input`, function () {
+      if (inputFilter(this.value)) {
+        this.oldValue = this.value;
+        this.oldSelectionStart = this.selectionStart;
+        this.oldSelectionEnd = this.selectionEnd;
+      } else if (this.hasOwnProperty("oldValue")) {
+        this.value = this.oldValue;
+        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+      } else {
+        this.value = "";
+      }
+    });
+  }
+
+  _validateCity() {
+    const inputCity = document.getElementById(`event-destination-1`);
+    console.log(111);
+
+
+    const modifyInput = function (e) {
+      e.target.value = ``;
+      console.log(333);
+    };
+
+    const resetInput = function (e) {
+      e.target.value = ``;
+      console.log(999);
+      // inputCity.addEventListener('input', modifyInput);
+    };
+
+    const blurInput = function () {
+      //inputCity.removeEventListener(`input`, modifyInput);
+      //inputCity.removeEventListener(`focus`, resetInput);
+      //inputCity.removeEventListener(`blur`, blurInput);
+
+    };
+
+    inputCity.addEventListener(`input`, modifyInput);
+    inputCity.addEventListener(`focus`, resetInput);
+    // inputCity.addEventListener('blur', blurInput);
   }
 
   _startDateChangeHandler([userDate]) {
@@ -309,6 +365,9 @@ export default class EventEdit extends SmartView {
   _editClickHandler(evt) {
     evt.preventDefault();
     this._callback.editClick();
+
+
+    console.log('_editClickHandler')
   }
 
   _formDeleteClickHandler(evt) {
@@ -332,6 +391,11 @@ export default class EventEdit extends SmartView {
 
   _priceInputHandler(evt) {
     evt.preventDefault();
+
+    this._setInputFilter(document.getElementById(`event-price-1`), function (value) {
+      return /^-?\d*$/.test(value);
+    });
+
     this.updateData({
       price: evt.target.value
     }, true);
@@ -339,6 +403,9 @@ export default class EventEdit extends SmartView {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
+
+
+    this._validateCity();
     let cityDescription = CITY.filter((city) => city.city === evt.target.value);
 
     if (!cityDescription.length) {
@@ -378,8 +445,8 @@ export default class EventEdit extends SmartView {
 
   _offersChangeHandler(evt) {
     evt.preventDefault();
-
-    let newOffers = this._data.type.offers.slice();
+    let newOffers = {};
+    newOffers = JSON.parse(JSON.stringify(this._data.type.offers.slice()));
 
     let index;
 
@@ -390,8 +457,6 @@ export default class EventEdit extends SmartView {
     }
 
     newOffers[index].isActive = !newOffers[index].isActive;
-
-
     const newType = Object.assign(
         {},
         {

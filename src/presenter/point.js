@@ -30,10 +30,9 @@ export default class Point {
 
   init(point) {
     this._point = point;
+   // this._pointReset = Object.assign({}, point);
     const prevEventComponent = this._eventComponent;
     const prevEventEditComponent = this._eventEditComponent;
-
-    console.log(point);
 
     this._eventComponent = new EventView(point);
     this._eventEditComponent = new EventEdit(point);
@@ -56,8 +55,6 @@ export default class Point {
       replace(this._eventEditComponent, prevEventEditComponent);
     }
 
-
-
     remove(prevEventComponent);
     remove(prevEventEditComponent);
   }
@@ -76,29 +73,32 @@ export default class Point {
   _replaceCardToForm() {
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
+
+    this._setInputFilter(document.getElementById(`event-price-1`), function (value) {
+      return /^-?\d*$/.test(value);
+    });
+
+    this._validateCity();
+
     this._changeMode();
     this._mode = Mode.EDITING;
 
-    this._setInputFilter(document.getElementById("event-price-1"), function(value) {
-      return /^-?\d*$/.test(value);
-    });
-    this._validateCity();
+
+
   }
 
   _setInputFilter(textbox, inputFilter) {
-    ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
-      textbox.addEventListener(event, function() {
-        if (inputFilter(this.value)) {
-          this.oldValue = this.value;
-          this.oldSelectionStart = this.selectionStart;
-          this.oldSelectionEnd = this.selectionEnd;
-        } else if (this.hasOwnProperty("oldValue")) {
-          this.value = this.oldValue;
-          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-        } else {
-          this.value = "";
-        }
-      });
+    textbox.addEventListener(`input`, function () {
+      if (inputFilter(this.value)) {
+        this.oldValue = this.value;
+        this.oldSelectionStart = this.selectionStart;
+        this.oldSelectionEnd = this.selectionEnd;
+      } else if (this.hasOwnProperty("oldValue")) {
+        this.value = this.oldValue;
+        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+      } else {
+        this.value = "";
+      }
     });
   }
 
@@ -136,31 +136,34 @@ export default class Point {
 
   _handleFormSubmit(update) {
     this._changeData(
-      UserAction.UPDATE_TASK,
-      UpdateType.MINOR,
-      update
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
+        update
     );
-    //this._changeData(point);
     this._replaceFormToCard();
   }
 
   _handleDeleteClick(point) {
     this._changeData(
-      UserAction.DELETE_TASK,
-      UpdateType.MINOR,
-      point
+        UserAction.DELETE_TASK,
+        UpdateType.MINOR,
+        point
     );
+    console.log('_handleDeleteClick');
   }
 
   _handleCloseClick() {
     this._eventEditComponent.reset(this._point);
     this._replaceFormToCard();
+    console.log('_handleCloseClick');
   }
 
   _validateCity() {
-    const inputCity = document.getElementById("event-destination-1");
+    const inputCity = document.getElementById(`event-destination-1`);
+    console.log(111);
 
-    const modifyInput = function(e) {
+
+    const modifyInput = function (e) {
       e.target.value = ``;
       console.log(333);
     };
@@ -168,18 +171,18 @@ export default class Point {
     const resetInput = function (e) {
       e.target.value = ``;
       console.log(999);
-      //inputCity.addEventListener('input', modifyInput);
+      // inputCity.addEventListener('input', modifyInput);
     };
 
     const blurInput = function () {
-      inputCity.removeEventListener('input', modifyInput);
-      inputCity.removeEventListener('focus', resetInput);
-      inputCity.removeEventListener('blur', blurInput);
+      //inputCity.removeEventListener(`input`, modifyInput);
+      //inputCity.removeEventListener(`focus`, resetInput);
+      //inputCity.removeEventListener(`blur`, blurInput);
 
     };
 
-    //inputCity.addEventListener(`input`, modifyInput);
+    inputCity.addEventListener(`input`, modifyInput);
     inputCity.addEventListener(`focus`, resetInput);
-    //inputCity.addEventListener('blur', blurInput);
+    // inputCity.addEventListener('blur', blurInput);
   }
 }

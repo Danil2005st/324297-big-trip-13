@@ -10,9 +10,11 @@ export default class PointNew {
 
     this._taskEditComponent = null;
 
+
+    this._handleCloseClick = this._handleCloseClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);3
+    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._setInputFilter = this._setInputFilter.bind(this);
   }
 
@@ -24,6 +26,8 @@ export default class PointNew {
     this._taskEditComponent = new EventEdit();
     this._taskEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._taskEditComponent.setDeleteClickHandler(this._handleDeleteClick);
+
+    this._taskEditComponent.setEditClickHandler(this._handleCloseClick);
 
 
     render(this._taskListContainer, this._taskEditComponent, RenderPosition.AFTERBEGIN);
@@ -60,10 +64,16 @@ export default class PointNew {
     this.destroy();
   }
 
+  _handleCloseClick() {
+    this.destroy();
+  }
+
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       evt.preventDefault();
       this.destroy();
+
+      console.log('111111111')
     }
   }
 
