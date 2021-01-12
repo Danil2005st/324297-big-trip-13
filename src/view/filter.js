@@ -1,4 +1,3 @@
-import {FILTERS} from "../const.js";
 import Abstract from "./abstract.js";
 
 const createFilterItemTemplate = (filter, currentFilterType) => {

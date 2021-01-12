@@ -57,7 +57,6 @@ const createOffers = (offers) => {
 const createEventEdit = (data) => {
   const {type, city, time, price} = data;
 
-
   const tripEvent = `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -109,7 +108,7 @@ const createEventEdit = (data) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers ${type.offers.length > 0 ? '' : 'visually-hidden'}">
+        <section class="event__section  event__section--offers ${type.offers.length > 0 ? `` : `visually-hidden`}">
 
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
@@ -118,7 +117,7 @@ const createEventEdit = (data) => {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination ${city.description ? '' : 'visually-hidden'}">
+        <section class="event__section  event__section--destination ${city.description ? `` : `visually-hidden`}">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${city.description}</p>
 
@@ -140,13 +139,9 @@ export default class EventEdit extends SmartView {
 
     super();
     this._point = JSON.parse(JSON.stringify(point));
-
-    console.log(this._point , 'this._point  event-edit.js');
-
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = this._point.time.difference;
-
     this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
 
     this._editClickHandler = this._editClickHandler.bind(this);
@@ -184,10 +179,9 @@ export default class EventEdit extends SmartView {
 
   reset(point) {
     this.updateData(
-      EventEdit.parseTaskToData(point)
-    , false);
+        EventEdit.parseTaskToData(point)
+        , false);
   }
-
 
   restoreHandlers() {
     this._setInnerHandlers();
@@ -258,7 +252,7 @@ export default class EventEdit extends SmartView {
 
     this.getElement()
     .querySelector(`.event__input--destination`)
-    .addEventListener(`input`, this._validateCity);
+    .addEventListener(`keydown`, this._validateCity);
 
     this.getElement()
     .querySelector(`.event__input--destination`)
@@ -278,14 +272,7 @@ export default class EventEdit extends SmartView {
   }
 
   _validateCity(event) {
-
-    //if(event.__proto__ == `FocusEvent`) {
-      console.log(111, event);
-      event.target.value = ``;
-    //}
-    console.log(333, window.event);
-
-
+    event.target.value = ``;
   }
 
   _startDateChangeHandler([userDate]) {
@@ -334,9 +321,6 @@ export default class EventEdit extends SmartView {
   _editClickHandler(evt) {
     evt.preventDefault();
     this._callback.editClick();
-
-
-    console.log('_editClickHandler')
   }
 
   _formDeleteClickHandler(evt) {
@@ -439,7 +423,6 @@ export default class EventEdit extends SmartView {
     this.updateData({
       type: newType
     }, true);
-
   }
 
   setFormSubmitHandler(callback) {

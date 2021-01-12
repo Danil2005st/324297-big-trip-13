@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
-const isSameOrAfter = require('dayjs/plugin/isSameOrAfter');
+const isSameOrAfter = require(`dayjs/plugin/isSameOrAfter`);
 dayjs.extend(isSameOrAfter);
-const isSameOrBefore = require('dayjs/plugin/isSameOrBefore');
+const isSameOrBefore = require(`dayjs/plugin/isSameOrBefore`);
 dayjs.extend(isSameOrBefore);
 
 export const getRandomInteger = (a = 0, b = 1) => {
