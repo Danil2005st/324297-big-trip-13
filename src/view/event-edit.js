@@ -1,11 +1,9 @@
 import dayjs from "dayjs";
-import { InputOnlyNumbers } from "input-only-numbers";
 import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-//import {getRandomInteger} from "../utils/common";
 
 const BLANK_POINT = {
   id: generateId(),
@@ -151,8 +149,6 @@ export default class EventEdit extends SmartView {
 
     this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
 
-    console.log(this._data,  ' this._data event-edit.js');
-
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -163,6 +159,7 @@ export default class EventEdit extends SmartView {
     this._offersChangeHandler = this._offersChangeHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    this._setInputFilter = this._setInputFilter.bind(this);
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -251,10 +248,17 @@ export default class EventEdit extends SmartView {
     .querySelector(`.event__input--price`)
     .addEventListener(`input`, this._priceInputHandler);
 
+    this.getElement()
+    .querySelector(`.event__input--price`)
+    .addEventListener(`input`, this._setInputFilter);
 
     this.getElement()
     .querySelector(`.event__input--destination`)
     .addEventListener(`focus`, this._validateCity);
+
+    this.getElement()
+    .querySelector(`.event__input--destination`)
+    .addEventListener(`input`, this._validateCity);
 
     this.getElement()
     .querySelector(`.event__input--destination`)
@@ -271,52 +275,17 @@ export default class EventEdit extends SmartView {
     this.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, this._editClickHandler);
-
-
-
   }
 
-  _setInputFilter(textbox, inputFilter) {
-    textbox.addEventListener(`input`, function () {
-      if (inputFilter(this.value)) {
-        this.oldValue = this.value;
-        this.oldSelectionStart = this.selectionStart;
-        this.oldSelectionEnd = this.selectionEnd;
-      } else if (this.hasOwnProperty("oldValue")) {
-        this.value = this.oldValue;
-        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-      } else {
-        this.value = "";
-      }
-    });
-  }
+  _validateCity(event) {
 
-  _validateCity() {
-    const inputCity = document.getElementById(`event-destination-1`);
-    console.log(111);
+    //if(event.__proto__ == `FocusEvent`) {
+      console.log(111, event);
+      event.target.value = ``;
+    //}
+    console.log(333, window.event);
 
 
-    const modifyInput = function (e) {
-      e.target.value = ``;
-      console.log(333);
-    };
-
-    const resetInput = function (e) {
-      e.target.value = ``;
-      console.log(999);
-      // inputCity.addEventListener('input', modifyInput);
-    };
-
-    const blurInput = function () {
-      //inputCity.removeEventListener(`input`, modifyInput);
-      //inputCity.removeEventListener(`focus`, resetInput);
-      //inputCity.removeEventListener(`blur`, blurInput);
-
-    };
-
-    inputCity.addEventListener(`input`, modifyInput);
-    inputCity.addEventListener(`focus`, resetInput);
-    // inputCity.addEventListener('blur', blurInput);
   }
 
   _startDateChangeHandler([userDate]) {
@@ -392,20 +361,22 @@ export default class EventEdit extends SmartView {
   _priceInputHandler(evt) {
     evt.preventDefault();
 
-    this._setInputFilter(document.getElementById(`event-price-1`), function (value) {
-      return /^-?\d*$/.test(value);
-    });
-
     this.updateData({
       price: evt.target.value
     }, true);
   }
 
+
+  _setInputFilter(event) {
+    const regExpr = new RegExp(`^\\d+$`);
+    if (!regExpr.test(event.target.value)) {
+      event.target.value = ``;
+    }
+  }
+
   _cityInputHandler(evt) {
     evt.preventDefault();
 
-
-    this._validateCity();
     let cityDescription = CITY.filter((city) => city.city === evt.target.value);
 
     if (!cityDescription.length) {

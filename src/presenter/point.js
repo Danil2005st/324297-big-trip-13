@@ -23,14 +23,10 @@ export default class Point {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
-
-    this._setInputFilter = this._setInputFilter.bind(this);
-    this._validateCity = this._validateCity.bind(this);
   }
 
   init(point) {
     this._point = point;
-   // this._pointReset = Object.assign({}, point);
     const prevEventComponent = this._eventComponent;
     const prevEventEditComponent = this._eventEditComponent;
 
@@ -73,33 +69,8 @@ export default class Point {
   _replaceCardToForm() {
     replace(this._eventEditComponent, this._eventComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
-
-    this._setInputFilter(document.getElementById(`event-price-1`), function (value) {
-      return /^-?\d*$/.test(value);
-    });
-
-    this._validateCity();
-
     this._changeMode();
     this._mode = Mode.EDITING;
-
-
-
-  }
-
-  _setInputFilter(textbox, inputFilter) {
-    textbox.addEventListener(`input`, function () {
-      if (inputFilter(this.value)) {
-        this.oldValue = this.value;
-        this.oldSelectionStart = this.selectionStart;
-        this.oldSelectionEnd = this.selectionEnd;
-      } else if (this.hasOwnProperty("oldValue")) {
-        this.value = this.oldValue;
-        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-      } else {
-        this.value = "";
-      }
-    });
   }
 
   _replaceFormToCard() {
@@ -149,40 +120,10 @@ export default class Point {
         UpdateType.MINOR,
         point
     );
-    console.log('_handleDeleteClick');
   }
 
   _handleCloseClick() {
     this._eventEditComponent.reset(this._point);
     this._replaceFormToCard();
-    console.log('_handleCloseClick');
-  }
-
-  _validateCity() {
-    const inputCity = document.getElementById(`event-destination-1`);
-    console.log(111);
-
-
-    const modifyInput = function (e) {
-      e.target.value = ``;
-      console.log(333);
-    };
-
-    const resetInput = function (e) {
-      e.target.value = ``;
-      console.log(999);
-      // inputCity.addEventListener('input', modifyInput);
-    };
-
-    const blurInput = function () {
-      //inputCity.removeEventListener(`input`, modifyInput);
-      //inputCity.removeEventListener(`focus`, resetInput);
-      //inputCity.removeEventListener(`blur`, blurInput);
-
-    };
-
-    inputCity.addEventListener(`input`, modifyInput);
-    inputCity.addEventListener(`focus`, resetInput);
-    // inputCity.addEventListener('blur', blurInput);
   }
 }
