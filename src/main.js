@@ -5,8 +5,25 @@ import FilterModel from "./model/filter.js";
 import {render, RenderPosition} from "./utils/render.js";
 import TripPresenter from "./presenter/trip.js";
 import FilterPresenter from "./presenter/filter.js";
+import Api from "./api.js";
+
+const AUTHORIZATION = `Basic Ko9Rl5Ho8Cv8Bc2Jv`;
+const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 
 const waypoints = new Array(2).fill().map(generatePoint);
+
+console.log(waypoints, 'waypoints');
+
+const api = new Api(END_POINT, AUTHORIZATION);
+api.getTasks().then((tasks) => {
+  console.log(tasks);
+  // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+  // а ещё на сервере используется snake_case, а у нас camelCase.
+  // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+  // Есть вариант получше - паттерн "Адаптер"
+});
+
+
 const pointsModel = new PointsModel();
 pointsModel.setPoints(waypoints);
 const filterModel = new FilterModel();

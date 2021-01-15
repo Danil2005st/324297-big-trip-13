@@ -53,4 +53,68 @@ export default class Points extends Observer {
 
     this._notify(updateType);
   }
+
+
+  static adaptToClient(task) {
+    const adaptedTask = Object.assign(
+      {},
+      task,
+      {
+        city: {
+          city: task.destination.name,
+          description: task.destination.description,
+          photos: task.destination.pictures
+        },
+        isFavorite: task.is_favorite,
+        price: task.base_price,
+        time: {
+          begin: new Date(task.date_from),
+          end: new Date(task.date_to)
+        },
+        type: {
+          type: task.type,
+          offers: task.offers
+        }
+      }
+    );
+
+    delete adaptedTask.base_price;
+    delete adaptedTask.destination;
+    delete adaptedTask.is_favorite;
+    delete adaptedTask.date_from;
+    delete adaptedTask.date_to;
+    delete adaptedTask.offers;
+
+    return adaptedTask;
+  }
+
+  static adaptToServer(task) {
+
+    const adaptedTask = Object.assign(
+      {},
+      task,
+      {
+        'destination': {
+          'description': task.city.description,
+          'name': task.city.city,
+          'pictures': task.city.photos
+        },
+        'is_favorite': task.isFavorite,
+        'base_price': task.price,
+        'date_from': task.time.begin.toISOString(),
+        'date_to': task.time.end.toISOString(),
+        'type': task.type.type,
+        'offers': task.type.offers
+      }
+    );
+
+    // Ненужные ключи мы удаляем
+    delete adaptedTask.city;
+    delete adaptedTask.isFavorite;
+    delete adaptedTask.price;
+    delete adaptedTask.time;
+    delete adaptedTask.type;
+
+    return adaptedTask;
+  }
 }
