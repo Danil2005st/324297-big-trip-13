@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
+//import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
+import {generateId} from "../utils/common.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";

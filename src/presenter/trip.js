@@ -2,6 +2,7 @@ import TripInfo from "../view/trip-info.js";
 import TripCost from "../view/trip-cost.js";
 import SortTemplate from "../view/sort.js";
 import EventList from "../view/event-list.js";
+import LoadingView from "../view/loading.js";
 import {sortPointPrice, sortPointTime, sortPointDate} from "../utils/common.js";
 import EmptyEventList from "../view/list-empty.js";
 import PointPresenter from "./point.js";
@@ -11,7 +12,7 @@ import {filter} from "../utils/filter.js";
 import {FilterType, SortType, UpdateType, UserAction} from "../const.js";
 
 export default class Trip {
-  constructor(siteMainElement, pointsModel, filterModel) {
+  constructor(siteMainElement, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._siteMainElement = siteMainElement;
@@ -19,9 +20,12 @@ export default class Trip {
     this._siteHeaderTrip = this._siteMainElement.querySelector(`.trip-main__trip-info`);
     this._pointPresenter = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
+    this._api = api;
     this._sortTemplate = null;
     this._emptyEventList = new EmptyEventList();
     this._eventList = new EventList();
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -64,7 +68,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._pointsModel.updateTask(updateType, update);
+        this._api.updateTask(update).then((response) => {
+          this._pointsModel.updateTask(updateType, response);
+        });
         break;
       case UserAction.ADD_TASK:
         this._pointsModel.addTask(updateType, update);
@@ -85,6 +91,11 @@ export default class Trip {
         break;
       case UpdateType.MAJOR:
         this._clearTrip({resetSortType: true});
+        this._renderList();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderList();
         break;
     }
@@ -135,6 +146,10 @@ export default class Trip {
     points.forEach((point) => this._renderPoint(point));
   }
 
+  _renderLoading() {
+    render(this._eventList, this._loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
   _renderNoPoints() {
     render(this._siteContentEvents, this._emptyEventList, RenderPosition.BEFOREEND);//
   }
@@ -151,6 +166,7 @@ export default class Trip {
     remove(this._emptyEventList);
     remove(this._tripCost);
     remove(this._tripInfo);
+    remove(this._loadingComponent);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -158,6 +174,11 @@ export default class Trip {
   }
 
   _renderList() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const points = this._getPoints();
     const pointsCount = points.length;
 

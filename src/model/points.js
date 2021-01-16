@@ -6,8 +6,9 @@ export default class Points extends Observer {
     this._points = [];
   }
 
-  setPoints(points) {
+  setPoints(updateType, points) {
     this._points = points.slice();
+    this._notify(updateType);
   }
 
   getPoints() {
@@ -89,20 +90,19 @@ export default class Points extends Observer {
   }
 
   static adaptToServer(task) {
-
     const adaptedTask = Object.assign(
       {},
       task,
       {
         'destination': {
-          'description': task.city.description,
           'name': task.city.city,
+          'description': task.city.description,
           'pictures': task.city.photos
         },
         'is_favorite': task.isFavorite,
-        'base_price': task.price,
-        'date_from': task.time.begin.toISOString(),
-        'date_to': task.time.end.toISOString(),
+        'base_price': Number.parseInt(task.price),
+        'date_from': task.time.begin,
+        'date_to': task.time.end,
         'type': task.type.type,
         'offers': task.type.offers
       }
@@ -110,6 +110,7 @@ export default class Points extends Observer {
 
     // Ненужные ключи мы удаляем
     delete adaptedTask.city;
+
     delete adaptedTask.isFavorite;
     delete adaptedTask.price;
     delete adaptedTask.time;

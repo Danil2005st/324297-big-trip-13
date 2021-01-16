@@ -1,5 +1,5 @@
 import EventEdit from "../view/event-edit.js";
-import {generateId} from "../mock/waypoint.js";
+import {generateId} from "../utils/common.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
 
