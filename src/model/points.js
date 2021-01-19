@@ -68,7 +68,7 @@ export default class Points extends Observer {
   }
 
   static adaptToClient(task) {
-    task.offers.map((offer) => offer.isActive = offer.isActive ? true : false);
+    task.offers.map((offer) => offer.isActive === offer.isActive ? true : false);
 
     const adaptedTask = Object.assign(
         {},
@@ -114,7 +114,7 @@ export default class Points extends Observer {
             'pictures': task.city.photos
           },
           'is_favorite': task.isFavorite,
-          'base_price': Number.parseInt(task.price),
+          'base_price': Number.parseInt(task.price, 10),
           'date_from': task.time.begin,
           'date_to': task.time.end,
           'type': task.type.type,
