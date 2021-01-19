@@ -51,7 +51,7 @@ const createEvent = (point) => {
           &mdash;
           <time class="event__end-time" datetime="${dayjs(time.end).format(`YYYY-MM-DD HH:mm`)}">${dayjs(time.end).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${calculateDifferenceTime(dayjs(time.begin),dayjs(time.end))}</p>
+        <p class="event__duration">${calculateDifferenceTime(dayjs(time.begin), dayjs(time.end))}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>

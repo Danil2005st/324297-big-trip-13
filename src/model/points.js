@@ -67,31 +67,29 @@ export default class Points extends Observer {
     this._notify(updateType);
   }
 
-
   static adaptToClient(task) {
-    //console.log(task, 'task-API')
-
+    task.offers.map((offer) => offer.isActive = offer.isActive ? true : false);
 
     const adaptedTask = Object.assign(
-      {},
-      task,
-      {
-        city: {
-          city: task.destination.name,
-          description: task.destination.description,
-          photos: task.destination.pictures
-        },
-        isFavorite: task.is_favorite,
-        price: task.base_price,
-        time: {
-          begin: new Date(task.date_from),
-          end: new Date(task.date_to)
-        },
-        type: {
-          type: task.type,
-          offers: task.offers
+        {},
+        task,
+        {
+          city: {
+            city: task.destination.name,
+            description: task.destination.description,
+            photos: task.destination.pictures
+          },
+          isFavorite: task.is_favorite,
+          price: task.base_price,
+          time: {
+            begin: new Date(task.date_from),
+            end: new Date(task.date_to)
+          },
+          type: {
+            type: task.type,
+            offers: task.offers
+          }
         }
-      }
     );
 
     delete adaptedTask.base_price;
@@ -105,31 +103,29 @@ export default class Points extends Observer {
   }
 
   static adaptToServer(task) {
+
     const adaptedTask = Object.assign(
-      {},
-      task,
-      {
-        'destination': {
-          'name': task.city.city,
-          'description': task.city.description,
-          'pictures': task.city.photos
-        },
-        'is_favorite': task.isFavorite,
-        'base_price': Number.parseInt(task.price),
-        'date_from': task.time.begin,
-        'date_to': task.time.end,
-        'type': task.type.type,
-        'offers': task.type.offers
-      }
+        {},
+        task,
+        {
+          'destination': {
+            'name': task.city.city,
+            'description': task.city.description,
+            'pictures': task.city.photos
+          },
+          'is_favorite': task.isFavorite,
+          'base_price': Number.parseInt(task.price),
+          'date_from': task.time.begin,
+          'date_to': task.time.end,
+          'type': task.type.type,
+          'offers': task.type.offers
+        }
     );
 
-    // Ненужные ключи мы удаляем
     delete adaptedTask.city;
-
     delete adaptedTask.isFavorite;
     delete adaptedTask.price;
     delete adaptedTask.time;
-    delete adaptedTask.type;
 
     return adaptedTask;
   }

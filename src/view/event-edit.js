@@ -1,7 +1,5 @@
 import dayjs from "dayjs";
-import {CITY, POINT_TYPE} from "../mock/waypoint.js";
 import {generateId} from "../utils/common.js";
-import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
@@ -26,28 +24,24 @@ const BLANK_POINT = {
   isFavorite: false,
 };
 
-const createCitiesList = () => {
-  return CITIES.map((city) => `<option value="${city}"></option>`).join(``);
+const createCitiesList = (destinations) => {
+  return destinations.map((destination) => `<option value="${destination.name}"></option>`).join(``);
 };
 
 const createPhotoList = (photos) => {
   return photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(``);
 };
 
-const createTypesList = () => {
-  return POINT_TYPES.map((type) => `
+const createTypesList = (offers) => {
+  return offers.map((offer) => `
   <div class="event__type-item">
-    <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}">
-    <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
+    <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+    <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${offer.type}</label>
   </div>`).join(``);
 };
 
 const createOffers = (offers) => {
-
-  //console.log(offers, 47);
-
-
-  /*return offers.map(({title, price, isActive}) => {
+  return offers.map(({title, price, isActive}) => {
     return `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}" type="checkbox" name="${title}" ${isActive ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${title}">
@@ -56,10 +50,10 @@ const createOffers = (offers) => {
         <span class="event__offer-price">${price}</span>
       </label>
   </div>`;
-  }).join(``);*/
+  }).join(``);
 };
 
-const createEventEdit = (data, newOffers) => {
+const createEventEdit = (data, newOffers, newDestinations) => {
   const {type, city, time, price} = data;
 
   const tripEvent = `<li class="trip-events__item">
@@ -75,7 +69,7 @@ const createEventEdit = (data, newOffers) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createTypesList()}
+              ${createTypesList(newOffers)}
             </fieldset>
           </div>
         </div>
@@ -86,7 +80,7 @@ const createEventEdit = (data, newOffers) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.city}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createCitiesList()}
+            ${createCitiesList(newDestinations)}
           </datalist>
         </div>
 
@@ -118,7 +112,7 @@ const createEventEdit = (data, newOffers) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-           ${createOffers(newOffers)}
+           ${createOffers(type.offers)}
           </div>
         </section>
 
@@ -140,16 +134,15 @@ const createEventEdit = (data, newOffers) => {
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point = BLANK_POINT, offers, destinations) {
+  constructor(point = BLANK_POINT, offers = [], destinations = []) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = this._point.time.difference;
     this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
-
-    console.log(offers, 'offers event edit');
-    console.log(destinations, 'destinations event edit');
+    this._offers = JSON.parse(JSON.stringify(offers));
+    this._destinations = JSON.parse(JSON.stringify(destinations));
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -167,16 +160,8 @@ export default class EventEdit extends SmartView {
     this._setDatepicker();
   }
 
-  /*setOffers(offers) {
-    console.log(offers)
-    this._offers = offers.slice();
-    return createOffers(this._offers);
-    console.log(this._offers, '+++offers')
-  }*/
-
-
   getTemplate() {
-    return createEventEdit(this._data);
+    return createEventEdit(this._data, this._offers, this._destinations);
   }
 
   removeElement() {
@@ -375,8 +360,7 @@ export default class EventEdit extends SmartView {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
-
-    let cityDescription = CITY.filter((city) => city.city === evt.target.value);
+    let cityDescription = this._destinations.filter((destination) => destination.name === evt.target.value);
 
     if (!cityDescription.length) {
       return;
@@ -387,7 +371,7 @@ export default class EventEdit extends SmartView {
         {
           city: evt.target.value,
           description: cityDescription[0].description,
-          photos: cityDescription[0].photos,
+          photos: cityDescription[0].pictures,
         }
     );
 
@@ -398,7 +382,7 @@ export default class EventEdit extends SmartView {
 
   _typeEventChangeHandler(evt) {
     evt.preventDefault();
-    let offers = POINT_TYPE.filter((type) => type.type.toLowerCase() === evt.target.value);
+    let offers = this._offers.filter((offer) => offer.type.toLowerCase() === evt.target.value);
 
     const newType = Object.assign(
         {},
@@ -416,17 +400,18 @@ export default class EventEdit extends SmartView {
   _offersChangeHandler(evt) {
     evt.preventDefault();
     let newOffers = {};
+    let index = 0;
+
     newOffers = JSON.parse(JSON.stringify(this._data.type.offers.slice()));
 
-    let index;
-
     for (let ind in newOffers) {
-      if (!newOffers[ind].title.indexOf(evt.target.title)) {
+      if (!newOffers[ind].title.indexOf(evt.target.name)) {
         index = ind;
       }
     }
 
     newOffers[index].isActive = !newOffers[index].isActive;
+
     const newType = Object.assign(
         {},
         {

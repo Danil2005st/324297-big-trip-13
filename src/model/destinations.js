@@ -4,7 +4,6 @@ export default class Destinations {
   }
 
   setDestinations(destinations) {
-    console.log(destinations);
     this._destinations = destinations;
   }
 
