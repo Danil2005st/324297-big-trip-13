@@ -7,7 +7,7 @@ const createCitiesList = () => {
 };
 
 const createPhotoList = (photos) => {
-  return photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``);
+  return photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(``);
 };
 
 const createTypesList = () => {

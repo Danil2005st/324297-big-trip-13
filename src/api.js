@@ -10,6 +10,7 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
+
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -20,6 +21,16 @@ export default class Api {
     return this._load({url: `points`})
     .then(Api.toJSON)
     .then((tasks) => tasks.map(TasksModel.adaptToClient));
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+    .then(Api.toJSON);
+  }
+
+  getDestinations() {
+    return this._load({url: `destinations`})
+    .then(Api.toJSON);
   }
 
   updateTask(task) {

@@ -4,11 +4,23 @@ export default class Points extends Observer {
   constructor() {
     super();
     this._points = [];
+    this._offers = {};
+    this._destinations = {};
   }
 
-  setPoints(updateType, points) {
+  setPoints(updateType, points, offers, destinations) {
     this._points = points.slice();
+    this._offers = offers;
+    this._destinations = destinations;
     this._notify(updateType);
+  }
+
+  getOffers() {
+    return this._offers;
+  }
+
+  getDestinations() {
+    return this._destinations;
   }
 
   getPoints() {
@@ -57,6 +69,9 @@ export default class Points extends Observer {
 
 
   static adaptToClient(task) {
+    //console.log(task, 'task-API')
+
+
     const adaptedTask = Object.assign(
       {},
       task,

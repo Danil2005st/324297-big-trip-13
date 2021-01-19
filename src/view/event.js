@@ -1,12 +1,29 @@
 import dayjs from "dayjs";
 import Abstract from "./abstract.js";
 
+const calculateDifferenceTime = (begin, end) => {
+  const days = end.diff(begin, `day`);
+  const hours = end.diff(begin, `hour`) % 24;
+  const minutes = end.diff(begin, `minute`) % 60;
+  let date;
+
+  if (days > 0) {
+    date = `${days}D ${hours}H ${minutes}M`;
+  } else if (hours > 0) {
+    date = `${hours}H ${minutes}M`;
+  } else {
+    date = `${minutes}M`;
+  }
+
+  return date;
+};
+
 const createOffers = (offers) => {
 
-  return offers.map(({name, price, isActive}) => {
+  return offers.map(({title, price, isActive}) => {
     return isActive
       ? `<li class="event__offer">
-      <span class="event__offer-title">${name}</span>
+      <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
     </li>`
@@ -34,7 +51,7 @@ const createEvent = (point) => {
           &mdash;
           <time class="event__end-time" datetime="${dayjs(time.end).format(`YYYY-MM-DD HH:mm`)}">${dayjs(time.end).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${time.difference}</p>
+        <p class="event__duration">${calculateDifferenceTime(dayjs(time.begin),dayjs(time.end))}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>

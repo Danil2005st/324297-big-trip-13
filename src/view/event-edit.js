@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-//import {CITY, generateId, POINT_TYPE} from "../mock/waypoint.js";
+import {CITY, POINT_TYPE} from "../mock/waypoint.js";
 import {generateId} from "../utils/common.js";
 import {POINT_TYPES, CITIES} from "../const.js";
 import SmartView from "./smart.js";
@@ -31,7 +31,7 @@ const createCitiesList = () => {
 };
 
 const createPhotoList = (photos) => {
-  return photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join(``);
+  return photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(``);
 };
 
 const createTypesList = () => {
@@ -43,19 +43,23 @@ const createTypesList = () => {
 };
 
 const createOffers = (offers) => {
-  return offers.map(({name, price, isActive}) => {
+
+  //console.log(offers, 47);
+
+
+  /*return offers.map(({title, price, isActive}) => {
     return `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}" type="checkbox" name="${name}" ${isActive ? `checked` : ``}>
-      <label class="event__offer-label" for="event-offer-${name}">
-        <span class="event__offer-title">${name}</span>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${title}" type="checkbox" name="${title}" ${isActive ? `checked` : ``}>
+      <label class="event__offer-label" for="event-offer-${title}">
+        <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </label>
   </div>`;
-  }).join(``);
+  }).join(``);*/
 };
 
-const createEventEdit = (data) => {
+const createEventEdit = (data, newOffers) => {
   const {type, city, time, price} = data;
 
   const tripEvent = `<li class="trip-events__item">
@@ -114,7 +118,7 @@ const createEventEdit = (data) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-           ${createOffers(type.offers)}
+           ${createOffers(newOffers)}
           </div>
         </section>
 
@@ -136,14 +140,16 @@ const createEventEdit = (data) => {
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point = BLANK_POINT) {
-
+  constructor(point = BLANK_POINT, offers, destinations) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = this._point.time.difference;
     this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
+
+    console.log(offers, 'offers event edit');
+    console.log(destinations, 'destinations event edit');
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -160,6 +166,14 @@ export default class EventEdit extends SmartView {
     this._setInnerHandlers();
     this._setDatepicker();
   }
+
+  /*setOffers(offers) {
+    console.log(offers)
+    this._offers = offers.slice();
+    return createOffers(this._offers);
+    console.log(this._offers, '+++offers')
+  }*/
+
 
   getTemplate() {
     return createEventEdit(this._data);
@@ -407,7 +421,7 @@ export default class EventEdit extends SmartView {
     let index;
 
     for (let ind in newOffers) {
-      if (!newOffers[ind].name.indexOf(evt.target.name)) {
+      if (!newOffers[ind].title.indexOf(evt.target.title)) {
         index = ind;
       }
     }

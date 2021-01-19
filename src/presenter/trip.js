@@ -53,6 +53,7 @@ export default class Trip {
   _getPoints() {
     const filterType = this._filterModel.getFilter();
     const points = this._pointsModel.getPoints();
+
     const filtredPoints = filter[filterType](points);
 
     switch (this._currentSortType) {
@@ -138,7 +139,7 @@ export default class Trip {
 
   _renderPoint(point) {
     const pointPresenter = new PointPresenter(this._eventList, this._handleViewAction, this._handleModeChange);
-    pointPresenter.init(point);
+    pointPresenter.init(point, this._pointsModel.getOffers(), this._pointsModel.getDestinations());
     this._pointPresenter[point.id] = pointPresenter;
   }
 

@@ -25,13 +25,13 @@ export default class Point {
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
 
-  init(point) {
+  init(point, offers, destinations) {
     this._point = point;
     const prevEventComponent = this._eventComponent;
     const prevEventEditComponent = this._eventEditComponent;
 
     this._eventComponent = new EventView(point);
-    this._eventEditComponent = new EventEdit(point);
+    this._eventEditComponent = new EventEdit(point, offers, destinations);
     this._eventComponent.setEditClickHandler(this._handleEditClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setEditClickHandler(this._handleCloseClick);
