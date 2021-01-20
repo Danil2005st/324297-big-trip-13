@@ -8,6 +8,11 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`
+};
+
 export default class Point {
   constructor(eventList, changeData, changeMode) {
     this._eventList = eventList;
@@ -49,6 +54,7 @@ export default class Point {
 
     if (this._mode === Mode.EDITING) {
       replace(this._eventEditComponent, prevEventEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevEventComponent);
@@ -64,6 +70,23 @@ export default class Point {
   destroy() {
     remove(this._eventComponent);
     remove(this._eventEditComponent);
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+    }
   }
 
   _replaceCardToForm() {
@@ -111,7 +134,6 @@ export default class Point {
         UpdateType.MINOR,
         update
     );
-    this._replaceFormToCard();
   }
 
   _handleDeleteClick(point) {

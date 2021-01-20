@@ -1,28 +1,8 @@
 import dayjs from "dayjs";
-import {generateId} from "../utils/common.js";
+import {BLANK_POINT} from "../const.js";
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-
-const BLANK_POINT = {
-  id: generateId(),
-  type: {
-    type: `Taxi`,
-    offers: []
-  },
-  city: {
-    city: ``,
-    description: ``,
-    photos: []
-  },
-  time: {
-    begin: dayjs(),
-    end: dayjs(),
-    difference: ``
-  },
-  price: ``,
-  isFavorite: false,
-};
 
 const createCitiesList = (destinations) => {
   return destinations.map((destination) => `<option value="${destination.name}"></option>`).join(``);
@@ -54,7 +34,7 @@ const createOffers = (offers) => {
 };
 
 const createEventEdit = (data, newOffers, newDestinations) => {
-  const {type, city, time, price} = data;
+  const {type, city, time, price, isDisabled, isSaving, isDeleting} = data;
 
   const tripEvent = `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -64,7 +44,7 @@ const createEventEdit = (data, newOffers, newDestinations) => {
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${type.type.toLowerCase()}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? `disabled` : ``}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -78,7 +58,7 @@ const createEventEdit = (data, newOffers, newDestinations) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.city}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city.city}" list="destination-list-1" ${isDisabled ? `disabled` : ``}>
           <datalist id="destination-list-1">
             ${createCitiesList(newDestinations)}
           </datalist>
@@ -86,10 +66,10 @@ const createEventEdit = (data, newOffers, newDestinations) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(time.begin).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(time.begin).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(time.end).format(`DD/MM/YY HH:mm`)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(time.end).format(`DD/MM/YY HH:mm`)}" ${isDisabled ? `disabled` : ``}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -97,11 +77,11 @@ const createEventEdit = (data, newOffers, newDestinations) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" ${isDisabled ? `disabled` : ``}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${ isDisabled ? `disabled` : ``}>${isSaving ? `saving...` : `save`}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `deleting...` : `delete`}</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -139,10 +119,11 @@ export default class EventEdit extends SmartView {
     this._point = JSON.parse(JSON.stringify(point));
     this._datepickerEnd = null;
     this._datepickerStart = null;
-    this._updateDifferent = this._point.time.difference;
+    this._updateDifferent = 0;
     this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
     this._offers = JSON.parse(JSON.stringify(offers));
     this._destinations = JSON.parse(JSON.stringify(destinations));
+
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -309,7 +290,7 @@ export default class EventEdit extends SmartView {
         {
           begin: dayjs(this._data.time.begin),
           end: dayjs(userDate),
-          difference: this._updateDifferent,
+          difference: this._calculateDifferenceTime,
         }
     );
 
@@ -349,7 +330,6 @@ export default class EventEdit extends SmartView {
       price: evt.target.value
     }, true);
   }
-
 
   _setInputFilter(event) {
     const regExpr = new RegExp(`^\\d+$`);
@@ -433,12 +413,21 @@ export default class EventEdit extends SmartView {
   static parseTaskToData(point) {
     return Object.assign(
         {},
-        point
+        point,
+      {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      }
     );
   }
 
   static parseDataToTask(data) {
     data = Object.assign({}, data);
+
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
 
     return data;
   }

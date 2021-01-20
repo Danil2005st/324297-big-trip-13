@@ -47,7 +47,7 @@ export default class Trip {
   createPoint() {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._pointNewPresenter.init();
+    this._pointNewPresenter.init(this._pointsModel.getOffers(), this._pointsModel.getDestinations());
   }
 
   _getPoints() {

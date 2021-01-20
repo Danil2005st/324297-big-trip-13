@@ -1,3 +1,6 @@
+import {generateId} from "./utils/common";
+import dayjs from "dayjs";
+
 export const POINT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 export const CITIES = [`Paris`, `Vein`, `Amsterdam`, `Sochi`, `Koktebel`, `Prague`, `Tokyo`, `Mexico City`];
 
@@ -52,4 +55,25 @@ export const UpdateType = {
   MINOR: `MINOR`,
   MAJOR: `MAJOR`,
   INIT: `INIT`
+};
+
+
+export const BLANK_POINT = {
+  id: generateId().toString(10),
+  type: {
+    type: `Taxi`,
+    offers: []
+  },
+  city: {
+    city: ``,
+    description: ``,
+    photos: []
+  },
+  time: {
+    begin: dayjs(),
+    end: dayjs(),
+    difference: ``
+  },
+  price: ``,
+  isFavorite: false,
 };

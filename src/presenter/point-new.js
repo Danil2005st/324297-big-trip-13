@@ -1,6 +1,7 @@
 import EventEdit from "../view/event-edit.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const.js";
+import {BLANK_POINT} from "../const.js";
 
 export default class PointNew {
   constructor(taskListContainer, changeData) {
@@ -14,19 +15,17 @@ export default class PointNew {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init() {
+  init(offers, destinations) {
     if (this._taskEditComponent !== null) {
       return;
     }
 
-    this._taskEditComponent = new EventEdit();
+    this._taskEditComponent = new EventEdit(BLANK_POINT, offers, destinations);
     this._taskEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._taskEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._taskEditComponent.setEditClickHandler(this._handleCloseClick);
 
-
     render(this._taskListContainer, this._taskEditComponent, RenderPosition.AFTERBEGIN);
-
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }
 
@@ -37,8 +36,14 @@ export default class PointNew {
 
     remove(this._taskEditComponent);
     this._taskEditComponent = null;
-
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
+  }
+
+  setSaving() {
+    this._taskEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
   }
 
   _handleFormSubmit(task) {
@@ -47,7 +52,6 @@ export default class PointNew {
         UpdateType.MINOR,
         task
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {
