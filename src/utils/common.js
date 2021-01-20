@@ -25,9 +25,4 @@ export const isPointFuture = (time) => {
   return time === null ? false : dayjs(time).isSameOrAfter(dayjs(), `D`);
 };
 
-
-// Date.now() и Math.random() - плохие решения для генерации id
-// в "продуктовом" коде, а для моков самое то.
-// Для "продуктового" кода используйте что-то понадежнее,
-// вроде nanoid - https://github.com/ai/nanoid
 export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);

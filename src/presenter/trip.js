@@ -5,7 +5,7 @@ import EventList from "../view/event-list.js";
 import LoadingView from "../view/loading.js";
 import {sortPointPrice, sortPointTime, sortPointDate} from "../utils/common.js";
 import EmptyEventList from "../view/list-empty.js";
-import PointPresenter from "./point.js";
+import PointPresenter, {State as PointPresenterViewState} from "./point.js";
 import PointNewPresenter from "./point-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
@@ -68,19 +68,33 @@ export default class Trip {
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
-        this._api.updateTask(update).then((response) => {
-          this._pointsModel.updateTask(updateType, response);
+      case UserAction.UPDATE_POINT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updatePoint(update)
+        .then((response) => {
+          this._pointsModel.updatePoint(updateType, response);
+        })
+        .catch(() => {
+          this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
         });
         break;
-      case UserAction.ADD_TASK:
-        this._api.addTask(update).then((response) => {
-          this._pointsModel.addTask(updateType, response);
+      case UserAction.ADD_POINT:
+        this._pointNewPresenter.setSaving();
+        this._api.addPoint(update)
+        .then((response) => {
+          this._pointsModel.addPoint(updateType, response);
+        }).catch(() => {
+          this._pointNewPresenter.setAborting();
         });
         break;
-      case UserAction.DELETE_TASK:
-        this._api.deleteTask(update).then(() => {
-          this._pointsModel.deleteTask(updateType, update);
+      case UserAction.DELETE_POINT:
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deletePoint(update)
+        .then(() => {
+          this._pointsModel.deletePoint(updateType, update);
+        })
+        .catch(() => {
+          this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
         });
         break;
     }

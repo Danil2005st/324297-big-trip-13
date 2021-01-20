@@ -120,7 +120,7 @@ export default class EventEdit extends SmartView {
     this._datepickerEnd = null;
     this._datepickerStart = null;
     this._updateDifferent = 0;
-    this._data = JSON.parse(JSON.stringify(EventEdit.parseTaskToData(point)));
+    this._data = JSON.parse(JSON.stringify(EventEdit.parsePointToData(point)));
     this._offers = JSON.parse(JSON.stringify(offers));
     this._destinations = JSON.parse(JSON.stringify(destinations));
 
@@ -160,7 +160,7 @@ export default class EventEdit extends SmartView {
 
   reset(point) {
     this.updateData(
-        EventEdit.parseTaskToData(point)
+        EventEdit.parsePointToData(point)
         , false);
   }
 
@@ -306,7 +306,7 @@ export default class EventEdit extends SmartView {
 
   _formDeleteClickHandler(evt) {
     evt.preventDefault();
-    this._callback.deleteClick(EventEdit.parseDataToTask(this._data));
+    this._callback.deleteClick(EventEdit.parseDataToPoint(this._data));
   }
 
   setDeleteClickHandler(callback) {
@@ -320,7 +320,7 @@ export default class EventEdit extends SmartView {
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(EventEdit.parseDataToTask(this._data));
+    this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
   }
 
   _priceInputHandler(evt) {
@@ -410,19 +410,19 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._formSubmitHandler);
   }
 
-  static parseTaskToData(point) {
+  static parsePointToData(point) {
     return Object.assign(
         {},
         point,
-      {
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false
-      }
+        {
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
     );
   }
 
-  static parseDataToTask(data) {
+  static parseDataToPoint(data) {
     data = Object.assign({}, data);
 
     delete data.isDisabled;

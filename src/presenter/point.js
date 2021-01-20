@@ -10,7 +10,8 @@ const Mode = {
 
 export const State = {
   SAVING: `SAVING`,
-  DELETING: `DELETING`
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
 };
 
 export default class Point {
@@ -73,6 +74,14 @@ export default class Point {
   }
 
   setViewState(state) {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
     switch (state) {
       case State.SAVING:
         this._eventEditComponent.updateData({
@@ -85,6 +94,10 @@ export default class Point {
           isDisabled: true,
           isDeleting: true
         });
+        break;
+      case State.ABORTING:
+        this._eventComponent.shake(resetFormState);
+        this._eventEditComponent.shake(resetFormState);
         break;
     }
   }
@@ -112,7 +125,7 @@ export default class Point {
 
   _handleFavoriteClick() {
     this._changeData(
-        UserAction.UPDATE_TASK,
+        UserAction.UPDATE_POINT,
         UpdateType.MINOR,
         Object.assign(
             {},
@@ -130,7 +143,7 @@ export default class Point {
 
   _handleFormSubmit(update) {
     this._changeData(
-        UserAction.UPDATE_TASK,
+        UserAction.UPDATE_POINT,
         UpdateType.MINOR,
         update
     );
@@ -138,7 +151,7 @@ export default class Point {
 
   _handleDeleteClick(point) {
     this._changeData(
-        UserAction.DELETE_TASK,
+        UserAction.DELETE_POINT,
         UpdateType.MINOR,
         point
     );

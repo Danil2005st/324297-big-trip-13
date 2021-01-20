@@ -27,11 +27,11 @@ export default class Points extends Observer {
     return this._points;
   }
 
-  updateTask(updateType, update) {
+  updatePoint(updateType, update) {
     const index = this._points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
-      throw new Error(`Can't update unexisting task`);
+      throw new Error(`Can't update unexisting point`);
     }
 
     this._points = [
@@ -43,7 +43,7 @@ export default class Points extends Observer {
     this._notify(updateType, update);
   }
 
-  addTask(updateType, update) {
+  addPoint(updateType, update) {
     this._points = [
       update,
       ...this._points
@@ -52,11 +52,11 @@ export default class Points extends Observer {
     this._notify(updateType, update);
   }
 
-  deleteTask(updateType, update) {
+  deletePoint(updateType, update) {
     const index = this._points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
-      throw new Error(`Can't delete unexisting task`);
+      throw new Error(`Can't delete unexisting point`);
     }
 
     this._points = [
@@ -67,66 +67,66 @@ export default class Points extends Observer {
     this._notify(updateType);
   }
 
-  static adaptToClient(task) {
-    task.offers.map((offer) => offer.isActive === offer.isActive ? true : false);
+  static adaptToClient(point) {
+    point.offers.map((offer) => offer.isActive === offer.isActive ? true : false);
 
-    const adaptedTask = Object.assign(
+    const adaptedPoint = Object.assign(
         {},
-        task,
+        point,
         {
           city: {
-            city: task.destination.name,
-            description: task.destination.description,
-            photos: task.destination.pictures
+            city: point.destination.name,
+            description: point.destination.description,
+            photos: point.destination.pictures
           },
-          isFavorite: task.is_favorite,
-          price: task.base_price,
+          isFavorite: point.is_favorite,
+          price: point.base_price,
           time: {
-            begin: new Date(task.date_from),
-            end: new Date(task.date_to)
+            begin: new Date(point.date_from),
+            end: new Date(point.date_to)
           },
           type: {
-            type: task.type,
-            offers: task.offers
+            type: point.type,
+            offers: point.offers
           }
         }
     );
 
-    delete adaptedTask.base_price;
-    delete adaptedTask.destination;
-    delete adaptedTask.is_favorite;
-    delete adaptedTask.date_from;
-    delete adaptedTask.date_to;
-    delete adaptedTask.offers;
+    delete adaptedPoint.base_price;
+    delete adaptedPoint.destination;
+    delete adaptedPoint.is_favorite;
+    delete adaptedPoint.date_from;
+    delete adaptedPoint.date_to;
+    delete adaptedPoint.offers;
 
-    return adaptedTask;
+    return adaptedPoint;
   }
 
-  static adaptToServer(task) {
+  static adaptToServer(point) {
 
-    const adaptedTask = Object.assign(
+    const adaptedPoint = Object.assign(
         {},
-        task,
+        point,
         {
           'destination': {
-            'name': task.city.city,
-            'description': task.city.description,
-            'pictures': task.city.photos
+            'name': point.city.city,
+            'description': point.city.description,
+            'pictures': point.city.photos
           },
-          'is_favorite': task.isFavorite,
-          'base_price': Number.parseInt(task.price, 10),
-          'date_from': task.time.begin,
-          'date_to': task.time.end,
-          'type': task.type.type,
-          'offers': task.type.offers
+          'is_favorite': point.isFavorite,
+          'base_price': Number.parseInt(point.price, 10),
+          'date_from': point.time.begin,
+          'date_to': point.time.end,
+          'type': point.type.type,
+          'offers': point.type.offers
         }
     );
 
-    delete adaptedTask.city;
-    delete adaptedTask.isFavorite;
-    delete adaptedTask.price;
-    delete adaptedTask.time;
+    delete adaptedPoint.city;
+    delete adaptedPoint.isFavorite;
+    delete adaptedPoint.price;
+    delete adaptedPoint.time;
 
-    return adaptedTask;
+    return adaptedPoint;
   }
 }

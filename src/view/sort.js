@@ -2,7 +2,6 @@ import {SORTS} from "../const.js";
 import Abstract from "./abstract.js";
 
 const createSortList = (currentSortType) => {
-
   return SORTS.map(({name, isDisabled}) => {
     return `<div class="trip-sort__item  trip-sort__item--${name.toLowerCase()}">
       <input id="sort-${name.toLowerCase()}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${name.toLowerCase()}" ${currentSortType.includes(name.toLowerCase()) ? `checked` : ``} ${isDisabled ? `disabled` : ``}>

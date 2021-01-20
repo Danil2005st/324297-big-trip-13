@@ -1,9 +1,6 @@
 import {generateId} from "./utils/common";
 import dayjs from "dayjs";
 
-export const POINT_TYPES = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-export const CITIES = [`Paris`, `Vein`, `Amsterdam`, `Sochi`, `Koktebel`, `Prague`, `Tokyo`, `Mexico City`];
-
 export const FilterType = {
   EVERYTHING: `Everything`,
   PAST: `Past`,
@@ -45,9 +42,9 @@ export const SORTS = [
 ];
 
 export const UserAction = {
-  UPDATE_TASK: `UPDATE_TASK`,
-  ADD_TASK: `ADD_TASK`,
-  DELETE_TASK: `DELETE_TASK`
+  UPDATE_POINT: `UPDATE_POINT`,
+  ADD_POINT: `ADD_POINT`,
+  DELETE_POINT: `DELETE_POINT`
 };
 
 export const UpdateType = {
@@ -56,7 +53,6 @@ export const UpdateType = {
   MAJOR: `MAJOR`,
   INIT: `INIT`
 };
-
 
 export const BLANK_POINT = {
   id: generateId().toString(10),

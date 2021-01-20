@@ -8,10 +8,12 @@ import {render, RenderPosition} from "./utils/render.js";
 import TripPresenter from "./presenter/trip.js";
 import FilterPresenter from "./presenter/filter.js";
 import Api from "./api.js";
+
 const AUTHORIZATION = `Basic Ko9Rl5Ho8Cv8Bc2`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const siteMainElement = document.querySelector(`.page-body`);
 const siteHeaderElement = siteMainElement.querySelector(`.trip-main__trip-controls`);
+
 const api = new Api(END_POINT, AUTHORIZATION);
 const offersModel = new OffersModel();
 const destinationsModel = new DestinationsModel();
@@ -36,9 +38,9 @@ api.getDestinations().then((destinations) => {
   destinationsModel.setDestinations([]);
 });
 
-api.getTasks()
-.then((tasks) => {
-  pointsModel.setPoints(UpdateType.INIT, tasks, offersModel.getOffers(), destinationsModel.getDestinations());
+api.getPoints()
+.then((points) => {
+  pointsModel.setPoints(UpdateType.INIT, points, offersModel.getOffers(), destinationsModel.getDestinations());
   render(siteHeaderElement, siteMenuComponent, RenderPosition.AFTERBEGIN);
   document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
     evt.preventDefault();
