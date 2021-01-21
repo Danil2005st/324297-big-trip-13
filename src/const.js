@@ -73,3 +73,9 @@ export const BLANK_POINT = {
   price: ``,
   isFavorite: false,
 };
+
+export const MenuItem = {
+  ADD_NEW_POINT: `New event`,
+  TABLE: `Table`,
+  STATS: `Stats`
+};

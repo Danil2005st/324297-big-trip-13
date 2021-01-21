@@ -9,7 +9,7 @@ import PointPresenter, {State as PointPresenterViewState} from "./point.js";
 import PointNewPresenter from "./point-new.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
 import {filter} from "../utils/filter.js";
-import {FilterType, SortType, UpdateType, UserAction} from "../const.js";
+import {SortType, UpdateType, UserAction} from "../const.js";
 
 export default class Trip {
   constructor(siteMainElement, pointsModel, filterModel, api) {
@@ -32,22 +32,30 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
     this._pointNewPresenter = new PointNewPresenter(this._eventList, this._handleViewAction);
   }
 
   init() {
     render(this._siteContentEvents, this._eventList, RenderPosition.BEFOREEND);
 
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderList();
   }
 
-  createPoint() {
-    this._currentSortType = SortType.DEFAULT;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._pointNewPresenter.init(this._pointsModel.getOffers(), this._pointsModel.getDestinations());
+  destroy() {
+    this._clearTrip({resetRenderedTaskCount: true, resetSortType: true});
+
+   // remove(this._taskListComponent);
+    remove(this._eventList);
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createPoint(callback) {
+    this._pointNewPresenter.init(this._pointsModel.getOffers(), this._pointsModel.getDestinations(), callback);
   }
 
   _getPoints() {
