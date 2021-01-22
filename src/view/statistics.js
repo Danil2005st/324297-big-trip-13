@@ -3,18 +3,20 @@ import flatpickr from "flatpickr";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from "./smart.js";
-import {countCompletedTaskInDateRange} from "../utils/statistics.js";
+import {makeItemsUniq, countPointMoney, countPointsByType} from "../utils/statistics.js";
 
 const moneyChart = (moneyCtx, points) => {
-
+  const pointTypes = points.map((point) => point.type.type);
+  const uniqTypes = makeItemsUniq(pointTypes);
+  const pointMoney = uniqTypes.map((type) => countPointMoney(points, type));
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: [`TAXI`, `BUS`, `TRAIN`, `SHIP`, `TRANSPORT`, `DRIVE`],
+      labels: uniqTypes,
       datasets: [{
-        data: [400, 300, 200, 160, 150, 100],
+        data: pointMoney,
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`
@@ -74,137 +76,78 @@ const moneyChart = (moneyCtx, points) => {
   });
 };
 
-/*
-const moneyChart = new Chart(moneyCtx, {
-  plugins: [ChartDataLabels],
-  type: `horizontalBar`,
-  data: {
-    labels: [`TAXI`, `BUS`, `TRAIN`, `SHIP`, `TRANSPORT`, `DRIVE`],
-    datasets: [{
-      data: [400, 300, 200, 160, 150, 100],
-      backgroundColor: `#ffffff`,
-      hoverBackgroundColor: `#ffffff`,
-      anchor: `start`
-    }]
-  },
-  options: {
-    plugins: {
-      datalabels: {
-        font: {
-          size: 13
-        },
-        color: `#000000`,
-        anchor: `end`,
-        align: `start`,
-        formatter: (val) => `€ ${val}`
+
+const typeChart = (typeCtx, points) => {
+  const pointTypes = points.map((point) => point.type.type);
+  const uniqTypes = makeItemsUniq(pointTypes);
+  const pointByTypeCounts = uniqTypes.map((type) => countPointsByType(points, type));
+
+  return new Chart(typeCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: uniqTypes,
+      datasets: [{
+        data: pointByTypeCounts,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13
+          },
+          color: `#000000`,
+          anchor: `end`,
+          align: `start`,
+          formatter: (val) => `${val}x`
+        }
+      },
+      title: {
+        display: true,
+        text: `TYPE`,
+        fontColor: `#000000`,
+        fontSize: 23,
+        position: `left`
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#000000`,
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          minBarLength: 50
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false,
       }
-    },
-    title: {
-      display: true,
-      text: `MONEY`,
-      fontColor: `#000000`,
-      fontSize: 23,
-      position: `left`
-    },
-    scales: {
-      yAxes: [{
-        ticks: {
-          fontColor: `#000000`,
-          padding: 5,
-          fontSize: 13,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        },
-        barThickness: 44,
-      }],
-      xAxes: [{
-        ticks: {
-          display: false,
-          beginAtZero: true,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        },
-        minBarLength: 50
-      }],
-    },
-    legend: {
-      display: false
-    },
-    tooltips: {
-      enabled: false,
     }
-  }
-});*/
-/*
-const typeChart = new Chart(typeCtx, {
-  plugins: [ChartDataLabels],
-  type: `horizontalBar`,
-  data: {
-    labels: [`TAXI`, `BUS`, `TRAIN`, `SHIP`, `TRANSPORT`, `DRIVE`],
-    datasets: [{
-      data: [4, 3, 2, 1, 1, 1],
-      backgroundColor: `#ffffff`,
-      hoverBackgroundColor: `#ffffff`,
-      anchor: `start`
-    }]
-  },
-  options: {
-    plugins: {
-      datalabels: {
-        font: {
-          size: 13
-        },
-        color: `#000000`,
-        anchor: `end`,
-        align: `start`,
-        formatter: (val) => `${val}x`
-      }
-    },
-    title: {
-      display: true,
-      text: `TYPE`,
-      fontColor: `#000000`,
-      fontSize: 23,
-      position: `left`
-    },
-    scales: {
-      yAxes: [{
-        ticks: {
-          fontColor: `#000000`,
-          padding: 5,
-          fontSize: 13,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        },
-        barThickness: 44,
-      }],
-      xAxes: [{
-        ticks: {
-          display: false,
-          beginAtZero: true,
-        },
-        gridLines: {
-          display: false,
-          drawBorder: false
-        },
-        minBarLength: 50
-      }],
-    },
-    legend: {
-      display: false
-    },
-    tooltips: {
-      enabled: false,
-    }
-  }
-});
-*/
+  });
+};
+
 const createStatisticsTemplate = () => {
 
   return `<section class="statistics">
@@ -228,7 +171,6 @@ export default class Statistics extends SmartView {
   constructor(tasks) {
     super();
 
-    debugger
     this._data = tasks;
     this._moneyChart = null;
     this._typeChart = null;
@@ -251,12 +193,10 @@ export default class Statistics extends SmartView {
   _setCharts() {
     this.getTemplate();
 
-    debugger
     const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);
-   const typeCtx = this.getElement().querySelector(`.statistics__chart--transport`);
-   const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
+    const typeCtx = this.getElement().querySelector(`.statistics__chart--transport`);
+    const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
 
-// Рассчитаем высоту канваса в зависимости от того, сколько данных в него будет передаваться
     const BAR_HEIGHT = 55;
     moneyCtx.height = BAR_HEIGHT * 5;
     typeCtx.height = BAR_HEIGHT * 5;
@@ -264,6 +204,6 @@ export default class Statistics extends SmartView {
 
 
     this._moneyChart = moneyChart(moneyCtx, this._data);
-    //this._typeChart = typeChart(typeCtx, this._data);
+    this._typeChart = typeChart(typeCtx, this._data);
   }
 }

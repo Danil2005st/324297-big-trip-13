@@ -14,6 +14,7 @@ import {MenuItem, UpdateType, FilterType} from "./const.js";
 const AUTHORIZATION = `Basic Ko9Rl5Ho8Cv8Bc2`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
 const siteMainElement = document.querySelector(`.page-body`);
+const bodyContainerElement = document.querySelector(`.page-body__page-main .page-body__container`);
 const siteHeaderElement = siteMainElement.querySelector(`.trip-main__trip-controls`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
@@ -37,7 +38,6 @@ let statisticsComponent = null;
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.ADD_NEW_POINT:
-      console.log('MenuItem.ADD_NEW_POINT')
       remove(statisticsComponent);
       tripPresenter.destroy();
       filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
@@ -46,15 +46,13 @@ const handleSiteMenuClick = (menuItem) => {
       siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = true;
       break;
     case MenuItem.TABLE:
-      console.log('TABLE')
       tripPresenter.init();
       remove(statisticsComponent);
       break;
     case MenuItem.STATS:
-      console.log('STATS')
       tripPresenter.destroy();
       statisticsComponent = new StatisticsView(pointsModel.getPoints());
-      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
+      render(bodyContainerElement, statisticsComponent, RenderPosition.AFTERBEGIN);
       break;
   }
 };
