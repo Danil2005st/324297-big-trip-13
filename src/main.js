@@ -5,7 +5,7 @@ import PointsModel from "./model/points.js";
 import FilterModel from "./model/filter.js";
 import OffersModel from "./model/offers.js";
 import DestinationsModel from "./model/destinations.js";
-import {render, RenderPosition} from "./utils/render.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 import TripPresenter from "./presenter/trip.js";
 import FilterPresenter from "./presenter/filter.js";
 import Api from "./api.js";
@@ -27,10 +27,44 @@ const tripPresenter = new TripPresenter(siteMainElement, pointsModel, filterMode
 const filterPresenter = new FilterPresenter(siteHeaderElement, filterModel, pointsModel);
 
 
+const handleTaskNewFormClose = () => {
+  siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = false;
+  siteMenuComponent.setMenuItem(MenuItem.TABLE);
+};
+
+let statisticsComponent = null;
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.ADD_NEW_POINT:
+      console.log('MenuItem.ADD_NEW_POINT')
+      remove(statisticsComponent);
+      tripPresenter.destroy();
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+      tripPresenter.init();
+      tripPresenter.createPoint(handleTaskNewFormClose);
+      siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = true;
+      break;
+    case MenuItem.TABLE:
+      console.log('TABLE')
+      tripPresenter.init();
+      remove(statisticsComponent);
+      break;
+    case MenuItem.STATS:
+      console.log('STATS')
+      tripPresenter.destroy();
+      statisticsComponent = new StatisticsView(pointsModel.getPoints());
+      render(siteMainElement, statisticsComponent, RenderPosition.BEFOREEND);
+      break;
+  }
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
+
 filterPresenter.init();
 tripPresenter.init();
 
-render(siteMainElement, new StatisticsView(pointsModel.getPoints()), RenderPosition.BEFOREEND);
 
 api.getOffers().then((offers) => {
   offersModel.setOffers(offers);
@@ -60,33 +94,4 @@ api.getPoints()
   addNewButtonComponent.setMenuClickHandler(tripPresenter, handleTaskNewFormClose);
 });
 
-const handleTaskNewFormClose = () => {
-  siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = false;
-  siteMenuComponent.setMenuItem(MenuItem.TABLE);
-};
 
-const handleSiteMenuClick = (menuItem) => {
-  switch (menuItem) {
-    case MenuItem.ADD_NEW_POINT:
-      console.log('MenuItem.ADD_NEW_POINT')
-      // Скрыть статистику
-      tripPresenter.destroy();
-      filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-      tripPresenter.init();
-      tripPresenter.createPoint(handleTaskNewFormClose);
-      siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = true;
-      break;
-    case MenuItem.TABLE:
-      console.log('TABLE')
-      tripPresenter.init();
-      // Скрыть статистику
-      break;
-    case MenuItem.STATS:
-      console.log('STATS')
-      tripPresenter.destroy();
-      // Показать статистику
-      break;
-  }
-};
-
-siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
