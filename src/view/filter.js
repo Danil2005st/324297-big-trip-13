@@ -21,7 +21,6 @@ const createFilterTemplate = (filterItems, currentFilterType) => {
   </form>`;
 };
 
-
 export default class FilterTemplate extends Abstract {
   constructor(filters, currentFilterType) {
     super();

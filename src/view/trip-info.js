@@ -28,9 +28,9 @@ const createTripInfo = (waypoints) => {
   }
 
   return `<div class="trip-info__main">
-    <h1 class="trip-info__title">${title}</h1>
-    <p class="trip-info__dates">${period}</p>
-  </div>`;
+            <h1 class="trip-info__title">${title}</h1>
+            <p class="trip-info__dates">${period}</p>
+          </div>`;
 };
 
 export default class TripInfo extends Abstract {

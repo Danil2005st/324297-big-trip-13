@@ -6,8 +6,8 @@ const createTripCost = (waypoints) => {
     totalPrice += price;
   }
   return `<p class="trip-info__cost">
-    Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
-  </p>`;
+            Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalPrice}</span>
+          </p>`;
 };
 
 export default class TripCost extends Abstract {

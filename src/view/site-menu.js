@@ -29,11 +29,16 @@ export default class SiteMenuTemplate extends Abstract {
     this.getElement().addEventListener(`click`, this._menuClickHandler);
   }
 
-  setMenuItem(menuItem) {
-    const item = this.getElement().querySelector(`[value=${menuItem}]`);
+  setMenuItem(menuItem, newButton) {
+    const items = this.getElement().querySelectorAll(`a`);
+    const item = this.getElement().querySelector(`[href=${menuItem}]`);
+
+    items.forEach(() => item.classList.remove(`trip-tabs__btn--active`));
 
     if (item !== null) {
-      item.checked = true;
+      item.classList.add(`trip-tabs__btn--active`);
     }
+
+    newButton.disabled = menuItem === MenuItem.STATS;
   }
 }

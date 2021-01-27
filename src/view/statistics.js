@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
-import flatpickr from "flatpickr";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from "./smart.js";
-import {makeItemsUniq, countPointMoney, countPointsByType} from "../utils/statistics.js";
+import {makeItemsUniq, countPointMoney, countPointsByType, countPointsByTime} from "../utils/statistics.js";
 
 const moneyChart = (moneyCtx, points) => {
   const pointTypes = points.map((point) => point.type.type);
@@ -76,7 +75,6 @@ const moneyChart = (moneyCtx, points) => {
   });
 };
 
-
 const typeChart = (typeCtx, points) => {
   const pointTypes = points.map((point) => point.type.type);
   const uniqTypes = makeItemsUniq(pointTypes);
@@ -148,6 +146,77 @@ const typeChart = (typeCtx, points) => {
   });
 };
 
+const timeChart = (timeCtx, points) => {
+  const pointTypes = points.map((point) => point.type.type);
+  const uniqTypes = makeItemsUniq(pointTypes);
+  const pointByTimeCounts = uniqTypes.map((type) => countPointsByTime(points, type));
+
+  return new Chart(timeCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: uniqTypes,
+      datasets: [{
+        data: pointByTimeCounts,
+        backgroundColor: `#ffffff`,
+        hoverBackgroundColor: `#ffffff`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 13
+          },
+          color: `#000000`,
+          anchor: `end`,
+          align: `start`,
+          formatter: (val) => `${dayjs(val).$D}D ${dayjs(val).$H}H ${dayjs(val).$M}M`
+        }
+      },
+      title: {
+        display: true,
+        text: `Time`,
+        fontColor: `#000000`,
+        fontSize: 23,
+        position: `left`
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#000000`,
+            padding: 5,
+            fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          minBarLength: 50
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false,
+      }
+    }
+  });
+};
+
 const createStatisticsTemplate = () => {
 
   return `<section class="statistics">
@@ -172,14 +241,11 @@ export default class Statistics extends SmartView {
     super();
 
     this._data = tasks;
-    this._moneyChart = null;
-    this._typeChart = null;
     this._setCharts();
   }
 
   removeElement() {
     super.removeElement();
-
   }
 
   getTemplate() {
@@ -202,8 +268,8 @@ export default class Statistics extends SmartView {
     typeCtx.height = BAR_HEIGHT * 5;
     timeCtx.height = BAR_HEIGHT * 5;
 
-
-    this._moneyChart = moneyChart(moneyCtx, this._data);
-    this._typeChart = typeChart(typeCtx, this._data);
+    moneyChart(moneyCtx, this._data);
+    typeChart(typeCtx, this._data);
+    timeChart(timeCtx, this._data);
   }
 }

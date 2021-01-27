@@ -29,8 +29,7 @@ const filterPresenter = new FilterPresenter(siteHeaderElement, filterModel, poin
 
 
 const handleTaskNewFormClose = () => {
-  siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = false;
-  siteMenuComponent.setMenuItem(MenuItem.TABLE);
+  siteMenuComponent.setMenuItem(MenuItem.TABLE, addNewButtonComponent.getElement());
 };
 
 let statisticsComponent = null;
@@ -43,14 +42,15 @@ const handleSiteMenuClick = (menuItem) => {
       filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
       tripPresenter.init();
       tripPresenter.createPoint(handleTaskNewFormClose);
-      siteMenuComponent.getElement().querySelector(`[href=${MenuItem.TABLE}]`).disabled = true;
       break;
     case MenuItem.TABLE:
       tripPresenter.init();
+      siteMenuComponent.setMenuItem(MenuItem.TABLE, addNewButtonComponent.getElement());
       remove(statisticsComponent);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
+      siteMenuComponent.setMenuItem(MenuItem.STATS, addNewButtonComponent.getElement());
       statisticsComponent = new StatisticsView(pointsModel.getPoints());
       render(bodyContainerElement, statisticsComponent, RenderPosition.AFTERBEGIN);
       break;
@@ -58,7 +58,6 @@ const handleSiteMenuClick = (menuItem) => {
 };
 
 siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-
 
 filterPresenter.init();
 tripPresenter.init();

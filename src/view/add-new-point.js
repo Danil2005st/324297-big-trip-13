@@ -18,16 +18,14 @@ export default class AddNewButtonTemplate extends Abstract {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
+    evt.target.disabled = true;
     this._callback.tripPresenter.createPoint(this._callback.callbackPoint);
   }
 
   setMenuClickHandler(callback, callbackPoint) {
     this._callback.tripPresenter = callback;
-
     this._callback.callbackPoint = callbackPoint;
-
 
     this.getElement().addEventListener(`click`, this._menuClickHandler);
   }
-
 }

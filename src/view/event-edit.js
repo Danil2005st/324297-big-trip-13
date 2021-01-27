@@ -119,11 +119,10 @@ export default class EventEdit extends SmartView {
     this._point = JSON.parse(JSON.stringify(point));
     this._datepickerEnd = null;
     this._datepickerStart = null;
-    this._updateDifferent = 0;
+    this._updateDifferent = null;
     this._data = JSON.parse(JSON.stringify(EventEdit.parsePointToData(point)));
     this._offers = JSON.parse(JSON.stringify(offers));
     this._destinations = JSON.parse(JSON.stringify(destinations));
-
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -340,7 +339,7 @@ export default class EventEdit extends SmartView {
 
   _cityInputHandler(evt) {
     evt.preventDefault();
-    let cityDescription = this._destinations.filter((destination) => destination.name === evt.target.value);
+    const cityDescription = this._destinations.filter((destination) => destination.name === evt.target.value);
 
     if (!cityDescription.length) {
       return;
@@ -362,7 +361,7 @@ export default class EventEdit extends SmartView {
 
   _typeEventChangeHandler(evt) {
     evt.preventDefault();
-    let offers = this._offers.filter((offer) => offer.type.toLowerCase() === evt.target.value);
+    const offers = this._offers.filter((offer) => offer.type.toLowerCase() === evt.target.value);
 
     const newType = Object.assign(
         {},
@@ -384,7 +383,7 @@ export default class EventEdit extends SmartView {
 
     newOffers = JSON.parse(JSON.stringify(this._data.type.offers.slice()));
 
-    for (let ind in newOffers) {
+    for (const ind in newOffers) {
       if (!newOffers[ind].title.indexOf(evt.target.name)) {
         index = ind;
       }
