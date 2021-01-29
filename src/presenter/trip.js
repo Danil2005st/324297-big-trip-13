@@ -54,6 +54,10 @@ export default class Trip {
   }
 
   createPoint(callback) {
+    const pointKey = Object.keys(this._pointPresenter);
+    pointKey.forEach((key) => {
+      this._pointPresenter[key].resetView();
+    });
     this._pointNewPresenter.init(this._pointsModel.getOffers(), this._pointsModel.getDestinations(), callback);
   }
 

@@ -18,16 +18,16 @@ export default class PointNew {
 
   init(offers, destinations, callback) {
     this._destroyCallback = callback;
+    this.isNew = true;
 
     if (this._pointEditComponent !== null) {
       return;
     }
 
-    this._pointEditComponent = new EventEdit(BLANK_POINT, offers, destinations);
+    this._pointEditComponent = new EventEdit(BLANK_POINT, offers, destinations, this.isNew);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._pointEditComponent.setEditClickHandler(this._handleCloseClick);
-
     render(this._pointListContainer, this._pointEditComponent, RenderPosition.AFTERBEGIN);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
   }

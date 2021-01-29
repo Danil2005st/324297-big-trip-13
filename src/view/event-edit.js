@@ -1,8 +1,10 @@
 import dayjs from "dayjs";
 import {BLANK_POINT} from "../const.js";
 import SmartView from "./smart.js";
+import AddNewButtonTemplate from "./add-new-point.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+
 
 const createCitiesList = (destinations) => {
   return destinations.map((destination) => `<option value="${destination.name}"></option>`).join(``);
@@ -12,10 +14,10 @@ const createPhotoList = (photos) => {
   return photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join(``);
 };
 
-const createTypesList = (offers) => {
+const createTypesList = (offers, currentType) => {
   return offers.map((offer) => `
   <div class="event__type-item">
-    <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+    <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}" ${currentType === offer.type ? `checked` : ``}>
     <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${offer.type}</label>
   </div>`).join(``);
 };
@@ -33,7 +35,7 @@ const createOffers = (offers) => {
   }).join(``);
 };
 
-const createEventEdit = (data, newOffers, newDestinations) => {
+const createEventEdit = (data, newOffers, newDestinations, isNew) => {
   const {type, city, time, price, isDisabled, isSaving, isDeleting} = data;
 
   const tripEvent = `<li class="trip-events__item">
@@ -49,7 +51,7 @@ const createEventEdit = (data, newOffers, newDestinations) => {
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${createTypesList(newOffers)}
+              ${createTypesList(newOffers, type.type)}
             </fieldset>
           </div>
         </div>
@@ -81,8 +83,8 @@ const createEventEdit = (data, newOffers, newDestinations) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${ isDisabled ? `disabled` : ``}>${isSaving ? `saving...` : `save`}</button>
-        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `deleting...` : `delete`}</button>
-        <button class="event__rollup-btn" type="button">
+        ${isNew ? `<button class="event__reset-btn" type="reset" ${isDisabled ? `Canceled` : ``}>${isDeleting ? `Canceling...` : `Cancel`}</button>` : `<button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>${isDeleting ? `deleting...` : `delete`}</button>`}
+        <button class="event__rollup-btn  ${isNew ? `visually-hidden` : ``}" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -114,7 +116,7 @@ const createEventEdit = (data, newOffers, newDestinations) => {
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point = BLANK_POINT, offers = [], destinations = []) {
+  constructor(point = BLANK_POINT, offers = [], destinations = [], isNew) {
     super();
     this._point = JSON.parse(JSON.stringify(point));
     this._datepickerEnd = null;
@@ -123,6 +125,9 @@ export default class EventEdit extends SmartView {
     this._data = JSON.parse(JSON.stringify(EventEdit.parsePointToData(point)));
     this._offers = JSON.parse(JSON.stringify(offers));
     this._destinations = JSON.parse(JSON.stringify(destinations));
+    this._isNew = isNew;
+
+    this._addNewButton = new AddNewButtonTemplate();
 
     this._editClickHandler = this._editClickHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -141,7 +146,7 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEdit(this._data, this._offers, this._destinations);
+    return createEventEdit(this._data, this._offers, this._destinations, this._isNew);
   }
 
   removeElement() {
@@ -249,6 +254,8 @@ export default class EventEdit extends SmartView {
     this.getElement()
     .querySelector(`.event__rollup-btn`)
     .addEventListener(`click`, this._editClickHandler);
+
+    this._addNewButton.getElement().addEventListener(`click`, this._editClickHandler);
   }
 
   _validateCity(event) {

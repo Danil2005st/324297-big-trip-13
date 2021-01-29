@@ -52,7 +52,7 @@ main {
     -moz-osx-font-smoothing: grayscale; } }
 
 .visually-hidden {
-  position: absolute;
+  position: absolute !important;
   overflow: hidden;
   clip: rect(0 0 0 0);
   width: 1px;
